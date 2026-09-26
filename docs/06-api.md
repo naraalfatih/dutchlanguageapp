@@ -44,12 +44,19 @@ email and for a wrong password.
 
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/conversations` | `{mode: tutor\|friend\|scenario, level, personaId?, scenarioId?, topic?}` → `{conversation, opening: TurnResponse}` |
-| GET | `/conversations` | the user's recent conversations |
-| GET | `/conversations/:id` | a conversation with its messages |
-| POST | `/conversations/:id/turns` | `{text, inputMode: text\|voice, latencyMs?}` → `TurnResponse` |
+| POST | `/conversations` | `{mode: tutor\|friend\|scenario, level, personaId?, scenarioId?, topic?}` → `201 {conversation, opening: TurnResponse}` |
+| GET | `/conversations?limit=` | `{conversations}`: the user's recent conversations |
+| GET | `/conversations/:id` | `{conversation, messages}` |
+| POST | `/conversations/:id/turns` | `{text, inputMode: text\|voice, latencyMs?}` → `{conversationId, turn: TurnResponse, events: LearningEvent[]}` |
 
-`TurnResponse`:
+The server derives learning events from each turn (`utterance.produced`, one
+`mistake.recorded` per correction, `scenario.completed` at the end of a scenario) and
+stores them before answering. The client applies `events` to its local learner state
+and does **not** queue them for sync, since they are already on the server. A turn on a
+finished scenario returns `409`; two turns racing on the same conversation return `409`
+for the loser.
+
+`turn` (`TurnResponse`):
 
 ```json
 {
@@ -80,7 +87,7 @@ offline engine answered (no key configured, quota reached, or provider outage).
 
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/evaluate/sentence` | `{text, level, task?: {prompt, mustInclude?, register?}}` → `{feedback, taskAchieved}`. Used by lesson speaking tasks when online; the same check runs offline on the client (rules only). |
+| POST | `/evaluate/sentence` | `{text, level, task?: {prompt, mustInclude?, modelAnswers?, register?}}` → `{achieved, feedback, score, source, quotaExceeded?}`. Used by lesson speaking tasks when online; the same check runs offline on the client (rules only). |
 
 ## Speech
 
@@ -91,12 +98,33 @@ offline engine answered (no key configured, quota reached, or provider outage).
 
 ## Health
 
-`GET /health` → `{status: "ok", db: "ok", ai: "anthropic" | "offline", version}`
+`GET /health` → `{status: "ok", db: "ok", ai: "anthropic" | "offline", version, contentVersion}` (`503` with `status: "degraded"` when the database is unreachable)
 
 ## Rate limits
 
 | Scope | Limit |
 |---|---|
 | Global per IP | 300 req / min |
-| `/auth/*` per IP | 10 req / min |
+| `/auth/register`, `/auth/login`, `/auth/refresh` per IP | 10 req / min |
+| `/conversations/:id/turns` per user | 20 req / min |
+| `/evaluate/sentence` per IP | 30 req / min |
 | AI turns per user | `AI_DAILY_TURN_LIMIT` (default 200/day); over the limit → the offline engine answers with `source: "offline"` and `quotaExceeded: true` |
+
+## AI request shape
+
+Each AI turn is one `client.beta.messages.create` call with structured output
+(`output_config.format` from a zod schema) and `output_config.effort` (default `low`):
+
+- **System:** the stable core prompt, then the per-conversation prompt (character,
+  scenario, learner profile). Both carry `cache_control`, so repeated turns read the
+  prefix from the prompt cache.
+- **Messages:** the recent history as alternating user/assistant turns, with a cache
+  breakpoint on the last history message. The final user message holds the volatile
+  `<turn_context>` (current scenario step, rule-checker findings) and the learner's
+  message.
+- **Fallbacks:** `fallbacks: "default"` (beta `server-side-fallback-2026-07-01`) is on by
+  default. If the model declines, the API retries server-side on a fallback model. Set
+  `AI_FALLBACKS=false` to turn this off, for example behind a gateway that rejects beta
+  parameters.
+- **Refusals and failures:** a refusal, truncated or invalid output, or a network error
+  is logged, and the offline engine answers instead (`source: "offline"`).

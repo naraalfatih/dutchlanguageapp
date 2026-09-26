@@ -58,6 +58,34 @@ function clarification(scenario: Scenario) {
     : { nl: 'Sorry, hoe bedoel je?', en: 'Sorry, what do you mean?' };
 }
 
+/**
+ * State transition after a learner turn. `moveOn` is true when the beat was achieved or the
+ * learner used their last attempt. Shared by the offline engine and the AI provider so both
+ * advance scenarios identically.
+ */
+export function nextScenarioState(
+  scenario: Scenario,
+  current: ScenarioEngineState,
+  achieved: boolean,
+  moveOn: boolean,
+): ScenarioEngineState {
+  if (!moveOn) return { ...current, attempts: current.attempts + 1 };
+  const beat = scenario.beats[current.beatIndex]!;
+  const nextIndex = current.beatIndex + 1;
+  const done = nextIndex >= scenario.beats.length;
+  return {
+    beatIndex: done ? current.beatIndex : nextIndex,
+    attempts: 0,
+    achieved: achieved ? [...current.achieved, beat.id] : current.achieved,
+    missed: achieved ? current.missed : [...current.missed, beat.id],
+    completed: done,
+  };
+}
+
+export function scenarioProgress(scenario: Scenario, state: ScenarioEngineState): number {
+  return progress(scenario, state);
+}
+
 export interface ScenarioTurnResult {
   state: ScenarioEngineState;
   response: TurnResponse;
@@ -95,7 +123,7 @@ export function scenarioTurn(
 
   const moveOn = evaluation.achieved || current.attempts + 1 >= MAX_ATTEMPTS_PER_BEAT;
   if (!moveOn) {
-    const state = { ...current, attempts: current.attempts + 1 };
+    const state = nextScenarioState(scenario, current, false, false);
     const missing = evaluation.missing.map((i) => i.description.toLowerCase()).join(', ');
     return {
       state,
@@ -115,17 +143,9 @@ export function scenarioTurn(
   }
 
   const achieved = evaluation.achieved;
-  const nextIndex = current.beatIndex + 1;
-  const done = nextIndex >= scenario.beats.length;
-  const state: ScenarioEngineState = {
-    beatIndex: done ? current.beatIndex : nextIndex,
-    attempts: 0,
-    achieved: achieved ? [...current.achieved, beat.id] : current.achieved,
-    missed: achieved ? current.missed : [...current.missed, beat.id],
-    completed: done,
-  };
-
-  const next = done ? undefined : scenario.beats[nextIndex]!;
+  const state = nextScenarioState(scenario, current, achieved, true);
+  const done = state.completed;
+  const next = done ? undefined : scenario.beats[state.beatIndex]!;
   const lead = achieved ? beat.onSuccess : { nl: 'Geen probleem.', en: 'No problem.' };
   const reply = {
     nl: [lead?.nl, next?.npc.nl].filter(Boolean).join(' ') || 'Dank u wel!',
