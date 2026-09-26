@@ -1,0 +1,45 @@
+import type { CanDo } from '@praat/core';
+
+/**
+ * CEFR-style can-do statements. A statement is *demonstrated* when the learner achieves a
+ * linked Life Simulator scenario, and *practised* when a linked lesson is completed.
+ */
+export const canDos: CanDo[] = [
+  { id: 'cd.greet', level: 'A0', text: 'I can greet people and say goodbye.', skill: 'speaking', scenarioIds: [], lessonIds: ['a0.greetings'] },
+  { id: 'cd.introduce', level: 'A0', text: "I can introduce myself and ask others who they are.", skill: 'speaking', scenarioIds: ['social.first-meeting'], lessonIds: ['a0.introductions'] },
+  { id: 'cd.survive', level: 'A0', text: "I can keep a conversation in Dutch when I don't understand something.", skill: 'speaking', scenarioIds: [], lessonIds: ['a0.survival'] },
+  { id: 'cd.numbers', level: 'A0', text: 'I can understand prices and give my phone number.', skill: 'listening', scenarioIds: [], lessonIds: ['a0.numbers'] },
+  { id: 'cd.order', level: 'A1', text: 'I can order food and drinks and pay.', skill: 'speaking', scenarioIds: ['daily.cafe'], lessonIds: ['a1.food'] },
+  { id: 'cd.shop', level: 'A1', text: 'I can do my grocery shopping in Dutch.', skill: 'speaking', scenarioIds: ['daily.supermarket'], lessonIds: ['a1.shopping'] },
+  { id: 'cd.family', level: 'A1', text: 'I can talk about my family.', skill: 'speaking', scenarioIds: [], lessonIds: ['a1.family'] },
+  { id: 'cd.time', level: 'A1', text: 'I can tell the time and make simple plans.', skill: 'speaking', scenarioIds: [], lessonIds: ['a1.time'] },
+  { id: 'cd.directions', level: 'A1', text: 'I can ask for and follow directions.', skill: 'listening', scenarioIds: [], lessonIds: ['a1.directions'] },
+  { id: 'cd.small-talk', level: 'A2', text: 'I can make small talk about the weather and the weekend.', skill: 'speaking', scenarioIds: ['social.neighbour'], lessonIds: ['a2.small-talk'] },
+  { id: 'cd.office', level: 'A2', text: 'I can chat with colleagues at work.', skill: 'speaking', scenarioIds: ['work.first-day'], lessonIds: ['a2.work'] },
+  { id: 'cd.train', level: 'A2', text: 'I can travel by train and handle changes and delays.', skill: 'listening', scenarioIds: ['daily.station'], lessonIds: ['a2.train'] },
+  { id: 'cd.birthday', level: 'A2', text: 'I can take part in a Dutch birthday party.', skill: 'speaking', scenarioIds: ['social.birthday'], lessonIds: ['a2.birthday'] },
+  { id: 'cd.gp', level: 'A2', text: 'I can make an appointment with my GP and describe my symptoms.', skill: 'speaking', scenarioIds: ['daily.gp'], lessonIds: ['a2.appointments'] },
+  { id: 'cd.pharmacy', level: 'A2', text: 'I can get medicine at the pharmacy and understand how to take it.', skill: 'listening', scenarioIds: ['daily.pharmacy'], lessonIds: [] },
+  { id: 'cd.restaurant', level: 'A2', text: 'I can handle a restaurant visit, including a small complaint.', skill: 'speaking', scenarioIds: ['daily.restaurant'], lessonIds: [] },
+  { id: 'cd.rent-viewing', level: 'A2', text: 'I can view an apartment and ask the right questions.', skill: 'speaking', scenarioIds: ['living.viewing'], lessonIds: [] },
+  { id: 'cd.repair', level: 'A2', text: 'I can report a problem in my home to my landlord.', skill: 'speaking', scenarioIds: ['living.repair'], lessonIds: [] },
+  { id: 'cd.gemeente', level: 'A2', text: 'I can register my address at the municipality.', skill: 'speaking', scenarioIds: ['living.gemeente'], lessonIds: [] },
+  { id: 'cd.experiences', level: 'A2', text: 'I can tell someone about something I experienced.', skill: 'speaking', scenarioIds: [], lessonIds: ['a2.experiences'] },
+  { id: 'cd.courses', level: 'A2', text: 'I can sign up for a course and talk to a teacher.', skill: 'speaking', scenarioIds: [], lessonIds: ['a2.courses'] },
+  { id: 'cd.opinion', level: 'B1', text: 'I can give and defend my opinion.', skill: 'speaking', scenarioIds: [], lessonIds: ['b1.opinions'] },
+  { id: 'cd.group', level: 'B1', text: 'I can join a group conversation at normal speed.', skill: 'listening', scenarioIds: ['social.borrel'], lessonIds: ['b1.group-talk'] },
+  { id: 'cd.news', level: 'B1', text: 'I can follow the main points of the news.', skill: 'listening', scenarioIds: [], lessonIds: ['b1.news'] },
+  { id: 'cd.meeting', level: 'B1', text: 'I can take part in a work meeting.', skill: 'speaking', scenarioIds: ['work.meeting'], lessonIds: ['b1.meetings'] },
+  { id: 'cd.interview', level: 'B1', text: 'I can handle a job interview in Dutch.', skill: 'speaking', scenarioIds: ['work.interview'], lessonIds: [] },
+  { id: 'cd.letters', level: 'B1', text: 'I can deal with official letters and ask about them.', skill: 'listening', scenarioIds: ['living.letter'], lessonIds: [] },
+  { id: 'cd.stories', level: 'B1', text: 'I can tell a story or an anecdote.', skill: 'speaking', scenarioIds: [], lessonIds: ['b1.storytelling'] },
+  { id: 'cd.natural', level: 'B2', text: 'I can sound natural and friendly with particles and softeners.', skill: 'fluency', scenarioIds: [], lessonIds: ['b2.natural'] },
+  { id: 'cd.idioms', level: 'B2', text: 'I can understand and use common idioms.', skill: 'vocabulary', scenarioIds: [], lessonIds: ['b2.idioms'] },
+  { id: 'cd.humour', level: 'B2', text: 'I can understand Dutch humour and irony.', skill: 'listening', scenarioIds: [], lessonIds: ['b2.humour'] },
+  { id: 'cd.negotiate', level: 'B2', text: 'I can negotiate and write professional emails.', skill: 'speaking', scenarioIds: [], lessonIds: ['b2.professional'] },
+  { id: 'cd.debate', level: 'B2', text: 'I can discuss complex topics and weigh arguments.', skill: 'speaking', scenarioIds: [], lessonIds: ['b2.discussions'] },
+  { id: 'cd.native', level: 'C1', text: 'I can use colloquial expressions like a native.', skill: 'fluency', scenarioIds: [], lessonIds: ['c1.native'] },
+  { id: 'cd.references', level: 'C1', text: 'I can understand cultural references and sayings.', skill: 'listening', scenarioIds: [], lessonIds: ['c1.references'] },
+  { id: 'cd.register', level: 'C1', text: 'I can switch between formal and informal Dutch.', skill: 'speaking', scenarioIds: [], lessonIds: ['c1.registers'] },
+  { id: 'cd.accents', level: 'C1', text: 'I can follow fast speech and regional accents.', skill: 'listening', scenarioIds: [], lessonIds: ['c1.listening'] },
+];

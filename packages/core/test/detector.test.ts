@@ -38,6 +38,9 @@ describe('detectMistakes: meaning and vocabulary', () => {
     expect(corrected('Hij heeft vijfentwintig jaar.')).toBe('Hij is vijfentwintig jaar.');
     expect(corrected('Hoeveel jaar heb je?')).toBe('Hoe oud ben je?');
     expect(patterns('Ik ben 20 jaar oud.')).toEqual([]);
+    expect(patterns('Ik heb vijf jaar als planner gewerkt.')).toEqual([]);
+    expect(patterns('We hebben tien jaar in Gent gewoond.')).toEqual([]);
+    expect(corrected('Ik heb 30 jaar oud.')).toBe('Ik ben 30 jaar oud.');
   });
 
   it('fixes feeling cold and warm', () => {

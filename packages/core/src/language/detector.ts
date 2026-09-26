@@ -172,7 +172,10 @@ function ruleAge(ctx: Ctx): Finding[] {
   const { tokens } = ctx;
   for (let i = 0; i + 3 < tokens.length; i++) {
     const [s, v, n, j] = [tokens[i]!, tokens[i + 1]!, tokens[i + 2]!, tokens[i + 3]!];
-    if (SUBJECTS.has(s.lower) && TO_ZIJN[v.lower] && isNumberToken(n.lower) && j.lower === 'jaar') {
+    // "Ik heb vijf jaar gewerkt" is a duration; only flag when 'jaar (oud)' ends the clause.
+    const after = tokens[i + 4];
+    const endsClause = !after || after.lower === 'oud' || CLAUSE_PUNCT.test(ctx.sentence.slice(j.end, after.start)) || COORDINATORS.has(after.lower);
+    if (SUBJECTS.has(s.lower) && TO_ZIJN[v.lower] && isNumberToken(n.lower) && j.lower === 'jaar' && endsClause) {
       out.push(
         finding({
           start: v.start,
