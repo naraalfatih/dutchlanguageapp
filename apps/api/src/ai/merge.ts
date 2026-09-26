@@ -1,12 +1,6 @@
 import { foldText, getPattern, type Correction } from '@praat/core';
 
-const SEVERITY_ORDER: Record<Correction['severity'], number> = { meaning: 0, grammar: 1, register: 2, naturalness: 3 };
-
-/** Most important first; gentle mode shows at most three corrections. */
-export function limitCorrections(corrections: Correction[], style: 'gentle' | 'thorough'): Correction[] {
-  const sorted = [...corrections].sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
-  return sorted.slice(0, style === 'gentle' ? 3 : 6);
-}
+export { limitCorrections } from '@praat/core';
 
 /** Unknown pattern ids from the model are mapped to 'other' so the diary stays consistent. */
 export function normalizePatternId(correction: Correction): Correction {
@@ -27,9 +21,7 @@ export function mergeCorrections(detector: Correction[], model: Correction[]): C
     if (foldText(c.original) === foldText(c.corrected)) continue; // not actually a correction
     const key = `${c.patternId}|${foldText(c.original)}`;
     // The model often quotes a fragment of the sentence the detector already corrected.
-    const sameSpot = detector.some(
-      (d) => d.patternId === c.patternId && foldText(d.original).includes(foldText(c.original)),
-    );
+    const sameSpot = detector.some((d) => d.patternId === c.patternId && foldText(d.original).includes(foldText(c.original)));
     if (seen.has(key) || seenCorrected.has(foldText(c.corrected)) || sameSpot) continue;
     seen.add(key);
     merged.push(c);

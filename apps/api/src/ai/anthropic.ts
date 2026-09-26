@@ -26,15 +26,7 @@ import {
   turnContextBlock,
   type ScenarioTurnInfo,
 } from './prompts.js';
-import type {
-  AiProvider,
-  EvaluationRequest,
-  EvaluationResult,
-  HistoryMessage,
-  TurnContext,
-  TurnResult,
-  Usage,
-} from './types.js';
+import type { AiProvider, EvaluationRequest, EvaluationResult, HistoryMessage, TurnContext, TurnResult, Usage } from './types.js';
 
 /** The slice of the Anthropic client this provider uses (lets tests pass a fake). */
 export interface MessagesClient {
@@ -143,7 +135,10 @@ export class AnthropicProvider implements AiProvider {
           { type: 'text', text: CORE_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
           { type: 'text', text: conversationSystemPrompt(ctx), cache_control: { type: 'ephemeral' } },
         ],
-        conversationMessages(ctx.history, `${turnContextBlock(ctx, detection.corrections, info)}\n<learner_message>\n${learnerText}\n</learner_message>`),
+        conversationMessages(
+          ctx.history,
+          `${turnContextBlock(ctx, detection.corrections, info)}\n<learner_message>\n${learnerText}\n</learner_message>`,
+        ),
         turnFormat,
       ));
     } catch (error) {
@@ -218,7 +213,10 @@ export class AnthropicProvider implements AiProvider {
         usage,
       };
     } catch (error) {
-      this.log?.warn({ err: error instanceof Error ? error.message : String(error) }, 'AI evaluation failed; using offline evaluator');
+      this.log?.warn(
+        { err: error instanceof Error ? error.message : String(error) },
+        'AI evaluation failed; using offline evaluator',
+      );
       const corrections = limitCorrections(baseline.corrections, request.correctionStyle);
       return {
         achieved: baseline.achieved,
@@ -312,4 +310,3 @@ function mergeGlossary(model: GlossaryItem[], known: GlossaryItem[]): GlossaryIt
   const seen = new Set(model.map((g) => g.term.toLowerCase()));
   return [...model, ...known.filter((g) => !seen.has(g.term.toLowerCase()))].slice(0, 4);
 }
-

@@ -1,10 +1,6 @@
 import { and, asc, desc, eq, sql } from 'drizzle-orm';
 import {
-  countWords,
-  createEvent,
-  scenarioAchieved,
-  scenarioScore,
-  splitSentences,
+  turnEvents,
   type ConversationMode,
   type CreateConversationInput,
   type GlossaryItem,
@@ -224,69 +220,6 @@ async function recentHistory(db: Db, conversationId: string): Promise<HistoryMes
   return rows.reverse().map((r) => ({ role: r.role === 'learner' ? 'learner' : 'character', text: r.text }));
 }
 
-const clip = (text: string, max: number) => (text.length > max ? `${text.slice(0, max - 1)}…` : text);
-
-/** Learning events derived from one learner turn. */
-export function turnEvents(
-  mode: ConversationMode,
-  level: Level,
-  input: TurnInput,
-  turn: TurnResponse,
-  scenario: Scenario | undefined,
-  scenarioState: ScenarioEngineState | undefined,
-  now: Date,
-): LearningEvent[] {
-  const corrections = turn.feedback?.corrections ?? [];
-  const events: LearningEvent[] = [
-    createEvent(
-      'utterance.produced',
-      {
-        mode,
-        level,
-        words: Math.min(500, countWords(input.text)),
-        sentences: Math.min(50, splitSentences(input.text).length),
-        errors: Math.min(50, corrections.filter((c) => c.severity !== 'naturalness').length),
-        inputMode: input.inputMode,
-        ...(input.latencyMs !== undefined ? { latencyMs: input.latencyMs } : {}),
-      },
-      now,
-    ),
-  ];
-  for (const c of corrections) {
-    if (!c.original.trim() || !c.corrected.trim() || !c.explanation.trim()) continue;
-    events.push(
-      createEvent(
-        'mistake.recorded',
-        {
-          patternId: c.patternId,
-          category: c.category,
-          original: clip(c.original, 500),
-          correction: clip(c.corrected, 500),
-          explanation: clip(c.explanation, 1000),
-          source: mode,
-        },
-        now,
-      ),
-    );
-  }
-  if (scenario && scenarioState?.completed) {
-    events.push(
-      createEvent(
-        'scenario.completed',
-        {
-          scenarioId: scenario.id,
-          level,
-          achieved: scenarioAchieved(scenario, scenarioState),
-          score: scenarioScore(scenario, scenarioState),
-          ...(scenario.canDoId ? { canDoId: scenario.canDoId } : {}),
-        },
-        now,
-      ),
-    );
-  }
-  return events;
-}
-
 export async function takeTurn(
   deps: ConversationDeps,
   userId: string,
@@ -325,8 +258,19 @@ export async function takeTurn(
   const scenarioState = result.scenarioState ?? engine.scenario;
   const nextEngine: EngineState = { ...engine, turns: engine.turns + 1, scenario: scenarioState };
   const now = new Date();
-  const events = turnEvents(ctx.mode, ctx.level, input, turn, scenario, row.mode === 'scenario' ? scenarioState : undefined, now);
-  const finished = row.mode === 'scenario' && scenarioState?.completed === true;
+  const finished = row.mode === 'scenario' && scenario !== undefined && scenarioState?.completed === true;
+  const events = turnEvents(
+    {
+      mode: ctx.mode,
+      level: ctx.level,
+      text: input.text,
+      inputMode: input.inputMode,
+      latencyMs: input.latencyMs,
+      corrections: turn.feedback?.corrections ?? [],
+      completedScenario: finished ? { scenario, state: scenarioState } : undefined,
+    },
+    now,
+  );
 
   // Tokens were spent even if the turn below loses a race, so record usage first.
   if (result.usage) await recordAiUsage(db, userId, result.usage, now);

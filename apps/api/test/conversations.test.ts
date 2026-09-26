@@ -47,7 +47,11 @@ describe('offline conversation partner', () => {
     const s = await signUp(t.app);
     const scenario = getScenario('daily.cafe')!;
     const created = (
-      await s.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'scenario', level: 'A1', scenarioId: scenario.id } })
+      await s.inject({
+        method: 'POST',
+        url: '/api/v1/conversations',
+        payload: { mode: 'scenario', level: 'A1', scenarioId: scenario.id },
+      })
     ).json();
     expect(created.opening.task).toMatchObject({ beatId: scenario.beats[0]!.id, progress: 0 });
 
@@ -81,7 +85,11 @@ describe('offline conversation partner', () => {
     const s = await signUp(t.app);
     const scenario = getScenario('daily.cafe')!;
     const { conversation } = (
-      await s.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'scenario', level: 'A1', scenarioId: scenario.id } })
+      await s.inject({
+        method: 'POST',
+        url: '/api/v1/conversations',
+        payload: { mode: 'scenario', level: 'A1', scenarioId: scenario.id },
+      })
     ).json();
     const url = `/api/v1/conversations/${conversation.id}/turns`;
     const first = (await s.inject({ method: 'POST', url, payload: { text: 'Eh… hallo?' } })).json();
@@ -95,14 +103,28 @@ describe('offline conversation partner', () => {
   it('validates input and hides other learners’ conversations', async () => {
     const a = await signUp(t.app);
     const b = await signUp(t.app);
-    const bad = await a.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'scenario', level: 'A1', scenarioId: 'nope' } });
+    const bad = await a.inject({
+      method: 'POST',
+      url: '/api/v1/conversations',
+      payload: { mode: 'scenario', level: 'A1', scenarioId: 'nope' },
+    });
     expect(bad.statusCode).toBe(400);
 
-    const { conversation } = (await a.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'friend', level: 'B1' } })).json();
+    const { conversation } = (
+      await a.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'friend', level: 'B1' } })
+    ).json();
     expect((await b.inject({ method: 'GET', url: `/api/v1/conversations/${conversation.id}` })).statusCode).toBe(404);
-    const turn = await b.inject({ method: 'POST', url: `/api/v1/conversations/${conversation.id}/turns`, payload: { text: 'Hoi!' } });
+    const turn = await b.inject({
+      method: 'POST',
+      url: `/api/v1/conversations/${conversation.id}/turns`,
+      payload: { text: 'Hoi!' },
+    });
     expect(turn.statusCode).toBe(404);
-    const empty = await a.inject({ method: 'POST', url: `/api/v1/conversations/${conversation.id}/turns`, payload: { text: '   ' } });
+    const empty = await a.inject({
+      method: 'POST',
+      url: `/api/v1/conversations/${conversation.id}/turns`,
+      payload: { text: '   ' },
+    });
     expect(empty.statusCode).toBe(400);
   });
 });

@@ -11,3 +11,4 @@ apps/web/dev-dist/
 playwright-report/
 test-results/
 *.tsbuildinfo
+apps/web/test-results/

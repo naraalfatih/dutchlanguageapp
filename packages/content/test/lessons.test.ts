@@ -44,7 +44,10 @@ function exerciseAnswers(exercise: Exercise): string[] {
 describe('curriculum structure', () => {
   it('has lessons at every level from A0 to C1', () => {
     for (const level of LEVELS) {
-      expect(lessons.some((l) => l.level === level), level).toBe(true);
+      expect(
+        lessons.some((l) => l.level === level),
+        level,
+      ).toBe(true);
     }
   });
 
@@ -84,7 +87,10 @@ describe.each(lessons.map((l) => [l.id, l] as const))('lesson %s', (_id, lesson)
         intents: lesson.speaking.mustInclude,
         ...(lesson.speaking.register ? { register: lesson.speaking.register } : {}),
       });
-      expect(result.missing.map((m) => m.id), answer).toEqual([]);
+      expect(
+        result.missing.map((m) => m.id),
+        answer,
+      ).toEqual([]);
     }
   });
 
@@ -108,7 +114,10 @@ describe.each(lessons.map((l) => [l.id, l] as const))('lesson %s', (_id, lesson)
       if (exercise.type === 'respond') {
         for (const answer of exercise.modelAnswers) {
           const result = evaluateFreeResponse(answer, { intents: exercise.intents });
-          expect(result.missing.map((m) => m.id), answer).toEqual([]);
+          expect(
+            result.missing.map((m) => m.id),
+            answer,
+          ).toEqual([]);
         }
       }
       if (exercise.type === 'translate') {
@@ -117,7 +126,10 @@ describe.each(lessons.map((l) => [l.id, l] as const))('lesson %s', (_id, lesson)
         }
       }
       for (const answer of exerciseAnswers(exercise)) {
-        expect(detectMistakes(answer).corrections.map((c) => c.patternId), answer).toEqual([]);
+        expect(
+          detectMistakes(answer).corrections.map((c) => c.patternId),
+          answer,
+        ).toEqual([]);
       }
     }
   });

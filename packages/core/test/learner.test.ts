@@ -11,7 +11,12 @@ const DAY = 86_400_000;
 const NOW = new Date('2026-06-30T12:00:00Z');
 const daysAgo = (n: number) => new Date(NOW.getTime() - n * DAY);
 
-function utterance(at: Date, sentences = 1, errors = 0, overrides: Partial<Extract<LearningEvent, { type: 'utterance.produced' }>['payload']> = {}) {
+function utterance(
+  at: Date,
+  sentences = 1,
+  errors = 0,
+  overrides: Partial<Extract<LearningEvent, { type: 'utterance.produced' }>['payload']> = {},
+) {
   return createEvent(
     'utterance.produced',
     { mode: 'tutor', level: 'A2', words: sentences * 6, sentences, errors, inputMode: 'text', ...overrides },
@@ -43,7 +48,10 @@ describe('skill model', () => {
   it('rises with success above expectation and describes the level', () => {
     let state = initialLearnerState('A1');
     for (let i = 0; i < 10; i++) {
-      state = applyEvent(state, createEvent('listening.completed', { itemId: 'x', level: 'A2', speed: 'normal', score: 1 }, daysAgo(10 - i)));
+      state = applyEvent(
+        state,
+        createEvent('listening.completed', { itemId: 'x', level: 'A2', speed: 'normal', score: 1 }, daysAgo(10 - i)),
+      );
     }
     expect(state.skills.listening.rating).toBeGreaterThan(1.5);
     expect(describeSkill(state.skills.listening).level).toBe('A2');
@@ -94,15 +102,37 @@ describe('reducer', () => {
 
   it('marks can-do statements as demonstrated only when a scenario is achieved', () => {
     let state = initialLearnerState();
-    state = applyEvent(state, createEvent('scenario.completed', { scenarioId: 's1', level: 'A2', achieved: false, score: 0.3, canDoId: 'cd1' }, NOW));
+    state = applyEvent(
+      state,
+      createEvent('scenario.completed', { scenarioId: 's1', level: 'A2', achieved: false, score: 0.3, canDoId: 'cd1' }, NOW),
+    );
     expect(state.canDo.cd1).toBeUndefined();
-    state = applyEvent(state, createEvent('scenario.completed', { scenarioId: 's1', level: 'A2', achieved: true, score: 0.9, canDoId: 'cd1' }, NOW));
+    state = applyEvent(
+      state,
+      createEvent('scenario.completed', { scenarioId: 's1', level: 'A2', achieved: true, score: 0.9, canDoId: 'cd1' }, NOW),
+    );
     expect(state.canDo.cd1!.evidence).toBe('scenario:s1');
   });
 
   it('tracks pronunciation sounds as patterns', () => {
     let state = initialLearnerState();
-    state = applyEvent(state, createEvent('speech.attempted', { target: 'huis', transcript: 'hoes', score: 0, level: 'A1', sounds: [{ sound: 'ui', ok: false }, { sound: 'r', ok: true }] }, NOW));
+    state = applyEvent(
+      state,
+      createEvent(
+        'speech.attempted',
+        {
+          target: 'huis',
+          transcript: 'hoes',
+          score: 0,
+          level: 'A1',
+          sounds: [
+            { sound: 'ui', ok: false },
+            { sound: 'r', ok: true },
+          ],
+        },
+        NOW,
+      ),
+    );
     expect(state.patterns['pron-ui']).toMatchObject({ occurrences: 1, drillAttempts: 1, drillCorrect: 0 });
     expect(state.patterns['pron-r']).toBeUndefined();
   });
@@ -150,7 +180,11 @@ describe('mistake diary', () => {
   it('shows pronunciation progress', () => {
     let state = initialLearnerState();
     const attempt = (ok: boolean, at: Date) =>
-      createEvent('speech.attempted', { target: 'goed', transcript: ok ? 'goed' : 'koet', score: ok ? 1 : 0, level: 'A1', sounds: [{ sound: 'g', ok }] }, at);
+      createEvent(
+        'speech.attempted',
+        { target: 'goed', transcript: ok ? 'goed' : 'koet', score: ok ? 1 : 0, level: 'A1', sounds: [{ sound: 'g', ok }] },
+        at,
+      );
     for (let i = 0; i < 5; i++) state = applyEvent(state, attempt(false, daysAgo(40)));
     for (let i = 0; i < 5; i++) state = applyEvent(state, attempt(i > 0, daysAgo(3)));
     const insight = analyzePatterns(state, NOW).find((i) => i.patternId === 'pron-g')!;
@@ -187,12 +221,22 @@ describe('daily plan', () => {
     expect(plan.focus).toBe('getting-started');
     expect(plan.items[0]!.kind).toBe('lesson');
     expect(plan.items[0]!.refId).toBe('a1.greetings');
+    // The rationale promises a conversation, even when the lesson alone fills the budget.
+    expect(plan.items.slice(1).some((i) => i.kind === 'friend' || i.kind === 'scenario')).toBe(true);
+  });
+
+  it('pairs a long lesson with a conversation even on a 5-minute budget', () => {
+    const plan = generatePlan(initialLearnerState('A0'), { ...DEFAULT_PROFILE, dailyMinutes: 5 }, catalog, NOW);
+    expect(plan.items.length).toBeGreaterThanOrEqual(2);
   });
 
   it('explains a listening ≫ speaking gap and prioritises conversation', () => {
     let state = initialLearnerState('A2');
     for (let i = 0; i < 8; i++) {
-      state = applyEvent(state, createEvent('listening.completed', { itemId: 'l', level: 'B1', speed: 'normal', score: 1 }, daysAgo(i + 1)));
+      state = applyEvent(
+        state,
+        createEvent('listening.completed', { itemId: 'l', level: 'B1', speed: 'normal', score: 1 }, daysAgo(i + 1)),
+      );
       state = applyEvent(state, utterance(daysAgo(i + 1), 1, 1, { words: 1, level: 'A2' }));
     }
     const plan = generatePlan(state, { ...DEFAULT_PROFILE, goals: ['moving'], dailyMinutes: 20 }, catalog, NOW);
@@ -204,7 +248,8 @@ describe('daily plan', () => {
 
   it('puts due reviews first and respects the time budget', () => {
     let state = initialLearnerState('A1');
-    for (let i = 0; i < 10; i++) state = applyEvent(state, createEvent('card.added', { itemId: `p${i}`, source: 'lesson' }, daysAgo(1)));
+    for (let i = 0; i < 10; i++)
+      state = applyEvent(state, createEvent('card.added', { itemId: `p${i}`, source: 'lesson' }, daysAgo(1)));
     const plan = generatePlan(state, { ...DEFAULT_PROFILE, dailyMinutes: 10 }, catalog, NOW);
     expect(plan.dueReviews).toBe(10);
     expect(plan.items.some((i) => i.kind === 'review')).toBe(true);

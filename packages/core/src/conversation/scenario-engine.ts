@@ -54,7 +54,10 @@ export function startScenario(scenario: Scenario): { state: ScenarioEngineState;
 
 function clarification(scenario: Scenario) {
   return scenario.register === 'formal'
-    ? { nl: 'Sorry, ik begrijp u niet helemaal. Wat bedoelt u precies?', en: "Sorry, I don't quite understand. What exactly do you mean?" }
+    ? {
+        nl: 'Sorry, ik begrijp u niet helemaal. Wat bedoelt u precies?',
+        en: "Sorry, I don't quite understand. What exactly do you mean?",
+      }
     : { nl: 'Sorry, hoe bedoel je?', en: 'Sorry, what do you mean?' };
 }
 
@@ -92,12 +95,7 @@ export interface ScenarioTurnResult {
   evaluation: FreeResponseResult;
 }
 
-export function scenarioTurn(
-  scenario: Scenario,
-  current: ScenarioEngineState,
-  text: string,
-  _level: Level,
-): ScenarioTurnResult {
+export function scenarioTurn(scenario: Scenario, current: ScenarioEngineState, text: string, _level: Level): ScenarioTurnResult {
   if (current.completed) {
     const evaluation = evaluateFreeResponse(text, { register: scenario.register });
     return {

@@ -1,9 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
 
-const bool = z
-  .enum(['true', 'false', '1', '0'])
-  .transform((v) => v === 'true' || v === '1');
+const bool = z.enum(['true', 'false', '1', '0']).transform((v) => v === 'true' || v === '1');
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -85,7 +83,9 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env, overrides: P
     refreshTokenTtlDays: env.REFRESH_TOKEN_TTL_DAYS,
     cookieSecure: env.COOKIE_SECURE ?? env.NODE_ENV === 'production',
     trustProxy: env.TRUST_PROXY,
-    corsOrigins: env.CORS_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean),
+    corsOrigins: env.CORS_ORIGINS.split(',')
+      .map((o) => o.trim())
+      .filter(Boolean),
     ai: {
       apiKey: env.ANTHROPIC_API_KEY || undefined,
       model: env.AI_MODEL,

@@ -12,7 +12,7 @@ import { registerAuth } from './auth/plugin.js';
 import type { Config } from './config.js';
 import type { AppContext } from './context.js';
 import type { DatabaseHandle } from './db/client.js';
-import { registerErrorHandler } from './errors.js';
+import { notFoundBody, registerErrorHandler } from './errors.js';
 import { authRoutes } from './routes/auth.js';
 import { conversationRoutes } from './routes/conversations.js';
 import { evaluateRoutes } from './routes/evaluate.js';
@@ -50,7 +50,8 @@ export async function buildServer(options: BuildOptions): Promise<FastifyInstanc
   const ai = options.ai ?? createAiProviders(config.ai, app.log, options.anthropicClient);
   const ctx: AppContext = { config, database, ai };
 
-  registerErrorHandler(app);
+  // With a bundled web app, unknown GETs fall back to the SPA shell (below).
+  registerErrorHandler(app, { notFound: !config.webDistDir });
 
   await app.register(helmet, {
     contentSecurityPolicy: {
@@ -118,7 +119,7 @@ export async function buildServer(options: BuildOptions): Promise<FastifyInstanc
       if (request.method === 'GET' && !request.url.startsWith('/api/')) {
         return reply.header('Cache-Control', 'no-cache').sendFile('index.html');
       }
-      return reply.status(404).send({ error: { code: 'not_found', message: `No route for ${request.method} ${request.url}` } });
+      return reply.status(404).send(notFoundBody(request.method, request.url));
     });
   }
 

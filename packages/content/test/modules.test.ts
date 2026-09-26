@@ -54,14 +54,22 @@ describe('Life Simulator scenarios', () => {
       for (const beat of scenario.beats) {
         for (const answer of beat.modelAnswers) {
           const result = evaluateFreeResponse(answer, { intents: beat.intents, register: scenario.register });
-          expect(result.missing.map((m) => m.id), `${beat.id}: ${answer}`).toEqual([]);
-          expect(result.corrections.map((c) => c.patternId), `${beat.id}: ${answer}`).toEqual([]);
+          expect(
+            result.missing.map((m) => m.id),
+            `${beat.id}: ${answer}`,
+          ).toEqual([]);
+          expect(
+            result.corrections.map((c) => c.patternId),
+            `${beat.id}: ${answer}`,
+          ).toEqual([]);
         }
       }
     });
 
     it('has natural NPC lines', () => {
-      expect(noMistakes(scenario.beats.flatMap((b) => [b.npc.nl, b.onSuccess?.nl ?? '', b.onMiss?.nl ?? ''].filter(Boolean)))).toEqual([]);
+      expect(
+        noMistakes(scenario.beats.flatMap((b) => [b.npc.nl, b.onSuccess?.nl ?? '', b.onMiss?.nl ?? ''].filter(Boolean))),
+      ).toEqual([]);
     });
 
     it('can be played to completion with the model answers', () => {
@@ -79,7 +87,10 @@ describe('Listening Trainer', () => {
   it('has items from A1 to C1 across several kinds', () => {
     expect(new Set(listeningItems.map((i) => i.kind)).size).toBeGreaterThanOrEqual(5);
     for (const level of ['A1', 'A2', 'B1', 'B2', 'C1']) {
-      expect(listeningItems.some((i) => i.level === level), level).toBe(true);
+      expect(
+        listeningItems.some((i) => i.level === level),
+        level,
+      ).toBe(true);
     }
   });
 
@@ -101,7 +112,10 @@ describe('Speak Like a Dutch Person', () => {
   it('covers the brief: gezellig, lekker, gewoon, eigenlijk, toch, hoor', () => {
     const naturals = expressions.map((e) => e.natural.toLowerCase());
     for (const word of ['gezellig', 'lekker', 'gewoon', 'eigenlijk', 'toch', 'hoor']) {
-      expect(naturals.some((n) => n.includes(word)), word).toBe(true);
+      expect(
+        naturals.some((n) => n.includes(word)),
+        word,
+      ).toBe(true);
     }
   });
 
@@ -145,7 +159,11 @@ describe('Personas, can-dos, sounds and catalog', () => {
     for (const canDo of canDos) {
       expect(() => CanDoSchema.parse(canDo)).not.toThrow();
       for (const id of canDo.lessonIds) expect(getLesson(id), id).toBeDefined();
-      for (const id of canDo.scenarioIds) expect(scenarios.some((s) => s.id === id), id).toBe(true);
+      for (const id of canDo.scenarioIds)
+        expect(
+          scenarios.some((s) => s.id === id),
+          id,
+        ).toBe(true);
     }
   });
 

@@ -210,7 +210,9 @@ export const conversations = pgTable(
     scenarioId: text('scenario_id'),
     level: text('level').notNull(),
     title: text('title').notNull(),
-    engineState: jsonb('engine_state').notNull().default(sql`'{}'::jsonb`),
+    engineState: jsonb('engine_state')
+      .notNull()
+      .default(sql`'{}'::jsonb`),
     completedAt: timestamp('completed_at', { withTimezone: true }),
     ...timestamps,
   },

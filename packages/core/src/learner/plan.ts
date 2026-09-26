@@ -56,18 +56,14 @@ export function dueCardCount(state: LearnerState, now: Date): number {
 }
 
 function nextLesson(state: LearnerState, catalog: PlanCatalog, targetLevel: number) {
-  const ordered = [...catalog.lessons].sort(
-    (a, b) => LEVEL_VALUE[a.level] - LEVEL_VALUE[b.level] || a.order - b.order,
-  );
+  const ordered = [...catalog.lessons].sort((a, b) => LEVEL_VALUE[a.level] - LEVEL_VALUE[b.level] || a.order - b.order);
   const open = ordered.filter((l) => state.lessons[l.id]?.status !== 'completed');
   const started = open.find((l) => state.lessons[l.id]?.status === 'started');
   return started ?? open.find((l) => LEVEL_VALUE[l.level] >= Math.floor(targetLevel)) ?? open[0];
 }
 
 function pickScenario(state: LearnerState, catalog: PlanCatalog, profile: Profile, speakingLevel: number) {
-  const categories = new Set(
-    (profile.goals.length ? profile.goals : (['moving'] as Goal[])).flatMap((g) => GOAL_CATEGORIES[g]),
-  );
+  const categories = new Set((profile.goals.length ? profile.goals : (['moving'] as Goal[])).flatMap((g) => GOAL_CATEGORIES[g]));
   const candidates = catalog.scenarios
     .filter((s) => LEVEL_VALUE[s.level] <= Math.floor(speakingLevel) + 1)
     .map((s) => ({
@@ -94,12 +90,7 @@ function weakestSound(state: LearnerState, catalog: PlanCatalog): { id: string; 
   return sound;
 }
 
-export function generatePlan(
-  state: LearnerState,
-  profile: Profile,
-  catalog: PlanCatalog,
-  now: Date = new Date(),
-): DailyPlan {
+export function generatePlan(state: LearnerState, profile: Profile, catalog: PlanCatalog, now: Date = new Date()): DailyPlan {
   const budget = profile.dailyMinutes;
   const skills = state.skills;
   const evidence = totalEvidence(state);
@@ -122,7 +113,7 @@ export function generatePlan(
   } else if (-gapListenSpeak >= 0.4) {
     focus = 'listening';
     rationale =
-      "You express yourself well, but natural-speed Dutch is harder to follow. Today adds listening practice at normal speed.";
+      'You express yourself well, but natural-speed Dutch is harder to follow. Today adds listening practice at normal speed.';
   } else if (skills.pronunciation.rating < overall - 0.5) {
     focus = 'pronunciation';
     rationale = 'Some of your sounds make it harder for people to understand you. A short pronunciation session will help most.';
@@ -169,7 +160,8 @@ export function generatePlan(
       title: 'Chat with your Dutch friend',
       minutes: 5,
       reason: 'Relaxed conversation builds speed and confidence — mistakes here cost nothing.',
-      priority: focus === 'speaking' ? 3 : 5,
+      // New learners: use the lesson right away in a relaxed chat.
+      priority: focus === 'speaking' ? 3 : 2,
     });
   }
 
@@ -191,8 +183,7 @@ export function generatePlan(
       refId: lesson.id,
       title: lesson.title,
       minutes: lesson.minutes,
-      reason:
-        state.lessons[lesson.id]?.status === 'started' ? 'Pick up where you left off.' : 'Your next step in the course.',
+      reason: state.lessons[lesson.id]?.status === 'started' ? 'Pick up where you left off.' : 'Your next step in the course.',
       priority: focus === 'getting-started' ? 1 : 3,
     });
   }
@@ -231,11 +222,12 @@ export function generatePlan(
   candidates.sort((a, b) => a.priority - b.priority);
   const items: PlanItem[] = [];
   let total = 0;
+  // Always at least two activities (learn + use it), then fill the remaining budget.
   for (const { priority: _priority, ...item } of candidates) {
     if (items.length >= 2 && total + item.minutes > budget) continue;
     items.push(item);
     total += item.minutes;
-    if (total >= budget) break;
+    if (items.length >= 2 && total >= budget) break;
   }
 
   const headline =

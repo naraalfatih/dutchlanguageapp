@@ -6,7 +6,7 @@ import { normalizeText, splitSentences, stripDiacritics } from '../src/language/
 describe('normalize', () => {
   it('ignores case and punctuation but keeps in-word apostrophes', () => {
     expect(normalizeText('  Hoe gaat HET?! ')).toBe('hoe gaat het');
-    expect(normalizeText("Zo’n mooi huis.")).toBe("zo'n mooi huis");
+    expect(normalizeText('Zo’n mooi huis.')).toBe("zo'n mooi huis");
     expect(stripDiacritics('geïnteresseerd één café')).toBe('geinteresseerd een cafe');
   });
 

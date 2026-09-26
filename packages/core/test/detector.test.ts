@@ -20,8 +20,8 @@ describe('detectMistakes: meaning and vocabulary', () => {
     const [c] = result.corrections;
     expect(c!.patternId).toBe('heten');
     expect(c!.severity).toBe('meaning');
-    expect(c!.explanation).toContain("People understand you");
-    expect(c!.explanation).toContain("I am hot (temperature)");
+    expect(c!.explanation).toContain('People understand you');
+    expect(c!.explanation).toContain('I am hot (temperature)');
     expect(c!.corrected).toBe('Ik heet Amira.');
   });
 

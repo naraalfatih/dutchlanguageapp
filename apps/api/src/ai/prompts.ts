@@ -110,7 +110,9 @@ export function turnContextBlock(ctx: TurnContext, detector: Correction[], scena
   if (scenario) {
     const { beat, next, keywordMatch, lastAttempt } = scenario;
     parts.push(describeBeat(beat));
-    parts.push(`A keyword check suggests the goal was ${keywordMatch ? 'met' : 'not met'} (only a hint — judge the meaning yourself).`);
+    parts.push(
+      `A keyword check suggests the goal was ${keywordMatch ? 'met' : 'not met'} (only a hint — judge the meaning yourself).`,
+    );
     const onSuccess = beat.onSuccess ? ` (for example: "${beat.onSuccess.nl}")` : '';
     const continuation = next
       ? `then continue with the next step by saying, in your own natural words: "${next.npc.nl}"`
@@ -150,4 +152,3 @@ export function evaluationPrompt(request: EvaluationRequest, detector: Correctio
     .filter(Boolean)
     .join('\n');
 }
-

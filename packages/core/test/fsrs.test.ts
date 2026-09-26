@@ -55,9 +55,8 @@ describe('reviewCard', () => {
   it('grows the interval with successful reviews', () => {
     let card = reviewCard(newCard('p1', t0), 3, t0);
     const intervals: number[] = [];
-    let now = t0;
     for (let i = 0; i < 4; i++) {
-      now = new Date(card.due);
+      const now = new Date(card.due);
       const before = now.getTime();
       card = reviewCard(card, 3, now);
       intervals.push((new Date(card.due).getTime() - before) / DAY);

@@ -10,7 +10,9 @@ afterAll(async () => {
 
 async function appWith(fake: ReturnType<typeof fakeAnthropic>, limit = 200) {
   const base = await createTestApp(
-    { ai: { apiKey: 'test-key', model: 'claude-opus-5', effort: 'low', maxTokens: 4000, fallbacks: true, dailyTurnLimit: limit } },
+    {
+      ai: { apiKey: 'test-key', model: 'claude-opus-5', effort: 'low', maxTokens: 4000, fallbacks: true, dailyTurnLimit: limit },
+    },
     fake.client,
   );
   apps.push(base);
@@ -60,7 +62,10 @@ describe('Claude conversation partner', () => {
   it('sends a cached, structured request and merges rule-based corrections', async () => {
     const fake = fakeAnthropic(() => ({
       json: aiTurn({
-        reply: { nl: 'Ah, Amira! Leuk je te ontmoeten. Waar kom je vandaan?', en: 'Ah, Amira! Nice to meet you. Where are you from?' },
+        reply: {
+          nl: 'Ah, Amira! Leuk je te ontmoeten. Waar kom je vandaan?',
+          en: 'Ah, Amira! Nice to meet you. Where are you from?',
+        },
         corrections: [
           {
             original: 'ik ben heet',
@@ -85,7 +90,11 @@ describe('Claude conversation partner', () => {
     const t = await appWith(fake);
     const s = await signUp(t.app);
     const { conversation, opening } = (
-      await s.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'friend', level: 'A2', personaId: 'friend.sanne' } })
+      await s.inject({
+        method: 'POST',
+        url: '/api/v1/conversations',
+        payload: { mode: 'friend', level: 'A2', personaId: 'friend.sanne' },
+      })
     ).json();
     // Openings are authored content: no model call.
     expect(fake.calls).toHaveLength(0);
@@ -126,11 +135,19 @@ describe('Claude conversation partner', () => {
     const t = await appWith(fake);
     const s = await signUp(t.app);
     const { conversation } = (
-      await s.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'scenario', level: 'A1', scenarioId: scenario.id } })
+      await s.inject({
+        method: 'POST',
+        url: '/api/v1/conversations',
+        payload: { mode: 'scenario', level: 'A1', scenarioId: scenario.id },
+      })
     ).json();
     // Paraphrase the keyword check might miss; the model's judgement wins.
     const { turn } = (
-      await s.inject({ method: 'POST', url: `/api/v1/conversations/${conversation.id}/turns`, payload: { text: 'Doe mij maar zo’n bruin warm drankje.' } })
+      await s.inject({
+        method: 'POST',
+        url: `/api/v1/conversations/${conversation.id}/turns`,
+        payload: { text: 'Doe mij maar zo’n bruin warm drankje.' },
+      })
     ).json();
     expect(turn.task).toMatchObject({ beatId: scenario.beats[0]!.id, achieved: true, nextTask: scenario.beats[1]!.task });
     expect(String(fake.calls[0]!.messages.at(-1)!.content)).toContain(scenario.beats[1]!.npc.nl);
@@ -142,7 +159,9 @@ describe('Claude conversation partner', () => {
     );
     const t = await appWith(fake);
     const s = await signUp(t.app);
-    const { conversation } = (await s.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'tutor', level: 'A1' } })).json();
+    const { conversation } = (
+      await s.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'tutor', level: 'A1' } })
+    ).json();
     for (const text of ['Ik ben heet Amira.', 'Ik woon in Utrecht.']) {
       const res = await s.inject({ method: 'POST', url: `/api/v1/conversations/${conversation.id}/turns`, payload: { text } });
       expect(res.statusCode).toBe(200);
@@ -154,7 +173,9 @@ describe('Claude conversation partner', () => {
     const fake = fakeAnthropic(() => ({ json: aiTurn() }));
     const t = await appWith(fake, 1);
     const s = await signUp(t.app);
-    const { conversation } = (await s.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'tutor', level: 'A2' } })).json();
+    const { conversation } = (
+      await s.inject({ method: 'POST', url: '/api/v1/conversations', payload: { mode: 'tutor', level: 'A2' } })
+    ).json();
     const url = `/api/v1/conversations/${conversation.id}/turns`;
     const first = (await s.inject({ method: 'POST', url, payload: { text: 'Ik woon in Leiden.' } })).json();
     expect(first.turn.source).toBe('ai');

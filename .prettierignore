@@ -3,3 +3,9 @@ dist
 coverage
 apps/api/drizzle
 package-lock.json
+# Hand-authored curriculum data: one entry per line reads better than wrapped objects.
+packages/content/src
+# Prose documentation is edited by hand.
+docs
+test-results
+playwright-report

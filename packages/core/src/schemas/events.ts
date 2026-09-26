@@ -5,14 +5,7 @@ import { LessonStepSchema } from './content.js';
 const score = z.number().min(0).max(1);
 const shortText = z.string().min(1).max(500);
 
-export const MISTAKE_SOURCES = [
-  'lesson',
-  'exercise',
-  'tutor',
-  'friend',
-  'scenario',
-  'speech',
-] as const;
+export const MISTAKE_SOURCES = ['lesson', 'exercise', 'tutor', 'friend', 'scenario', 'speech'] as const;
 export const MistakeSourceSchema = z.enum(MISTAKE_SOURCES);
 export type MistakeSource = z.infer<typeof MistakeSourceSchema>;
 

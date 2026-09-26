@@ -39,7 +39,12 @@ export async function meRoutes(app: FastifyInstance, { database, config }: AppCo
       ? await db
           .select()
           .from(conversationMessages)
-          .where(inArray(conversationMessages.conversationId, convs.map((c) => c.id)))
+          .where(
+            inArray(
+              conversationMessages.conversationId,
+              convs.map((c) => c.id),
+            ),
+          )
           .orderBy(asc(conversationMessages.createdAt))
       : [];
     reply.header('Content-Disposition', 'attachment; filename="praat-export.json"');
@@ -57,7 +62,13 @@ export async function meRoutes(app: FastifyInstance, { database, config }: AppCo
         createdAt: c.createdAt.toISOString(),
         messages: messages
           .filter((m) => m.conversationId === c.id)
-          .map((m) => ({ role: m.role, text: m.text, translation: m.translation, feedback: m.feedback, createdAt: m.createdAt.toISOString() })),
+          .map((m) => ({
+            role: m.role,
+            text: m.text,
+            translation: m.translation,
+            feedback: m.feedback,
+            createdAt: m.createdAt.toISOString(),
+          })),
       })),
     };
   });

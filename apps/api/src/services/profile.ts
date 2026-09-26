@@ -9,7 +9,7 @@ import {
   type PublicUser,
 } from '@praat/core';
 import type { Db } from '../db/client.js';
-import { userProfiles, users } from '../db/schema.js';
+import { userProfiles, type users } from '../db/schema.js';
 
 type ProfileRow = typeof userProfiles.$inferSelect;
 

@@ -18,8 +18,8 @@ export const CardStateKind = { New: 0, Learning: 1, Review: 2, Relearning: 3 } a
 
 /** FSRS-4.5 default parameters (w0 … w16). */
 export const DEFAULT_WEIGHTS = [
-  0.4872, 1.4003, 3.7145, 13.8206, 5.1618, 1.2298, 0.8975, 0.031, 1.6474, 0.1367, 1.0461, 2.1072,
-  0.0793, 0.3246, 1.587, 0.2272, 2.8755,
+  0.4872, 1.4003, 3.7145, 13.8206, 5.1618, 1.2298, 0.8975, 0.031, 1.6474, 0.1367, 1.0461, 2.1072, 0.0793, 0.3246, 1.587, 0.2272,
+  2.8755,
 ] as const;
 
 const DECAY = -0.5;
@@ -52,10 +52,7 @@ export function retrievability(elapsedDays: number, stability: number): number {
   return Math.pow(1 + (FACTOR * Math.max(0, elapsedDays)) / stability, DECAY);
 }
 
-export function intervalForStability(
-  stability: number,
-  options: SchedulerOptions = DEFAULT_SCHEDULER_OPTIONS,
-): number {
+export function intervalForStability(stability: number, options: SchedulerOptions = DEFAULT_SCHEDULER_OPTIONS): number {
   const raw = (stability / FACTOR) * (Math.pow(options.requestRetention, 1 / DECAY) - 1);
   return clamp(Math.round(raw), 1, options.maximumIntervalDays);
 }
@@ -83,24 +80,10 @@ export function nextRecallStability(
 ): number {
   const hardPenalty = rating === 2 ? w[15]! : 1;
   const easyBonus = rating === 4 ? w[16]! : 1;
-  return (
-    s *
-    (1 +
-      Math.exp(w[8]!) *
-        (11 - d) *
-        Math.pow(s, -w[9]!) *
-        (Math.exp((1 - r) * w[10]!) - 1) *
-        hardPenalty *
-        easyBonus)
-  );
+  return s * (1 + Math.exp(w[8]!) * (11 - d) * Math.pow(s, -w[9]!) * (Math.exp((1 - r) * w[10]!) - 1) * hardPenalty * easyBonus);
 }
 
-export function nextForgetStability(
-  d: number,
-  s: number,
-  r: number,
-  w: readonly number[] = DEFAULT_WEIGHTS,
-): number {
+export function nextForgetStability(d: number, s: number, r: number, w: readonly number[] = DEFAULT_WEIGHTS): number {
   const next = w[11]! * Math.pow(d, -w[12]!) * (Math.pow(s + 1, w[13]!) - 1) * Math.exp((1 - r) * w[14]!);
   // A lapse never increases stability.
   return Math.min(next, s);
@@ -166,9 +149,7 @@ export function reviewCard(
   }
 
   // Review state
-  const elapsedDays = card.lastReview
-    ? Math.max(0, (now.getTime() - new Date(card.lastReview).getTime()) / DAY_MS)
-    : 0;
+  const elapsedDays = card.lastReview ? Math.max(0, (now.getTime() - new Date(card.lastReview).getTime()) / DAY_MS) : 0;
   const r = retrievability(elapsedDays, card.stability);
   const difficulty = nextDifficulty(card.difficulty, rating, w);
 

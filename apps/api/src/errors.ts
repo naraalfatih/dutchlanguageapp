@@ -1,5 +1,5 @@
 import type { FastifyError, FastifyInstance } from 'fastify';
-import { ZodError, type ZodType } from 'zod';
+import { type ZodError, type ZodType } from 'zod';
 
 export class AppError extends Error {
   constructor(
@@ -29,7 +29,11 @@ export function parse<T>(schema: ZodType<T>, input: unknown): T {
   return result.data;
 }
 
-export function registerErrorHandler(app: FastifyInstance): void {
+export function notFoundBody(method: string, url: string) {
+  return { error: { code: 'not_found', message: `No route for ${method} ${url}` } };
+}
+
+export function registerErrorHandler(app: FastifyInstance, options: { notFound?: boolean } = {}): void {
   app.setErrorHandler((error: FastifyError | AppError | ZodError | Error, request, reply) => {
     if (error instanceof AppError) {
       return reply.status(error.statusCode).send({ error: { code: error.code, message: error.message, details: error.details } });
@@ -47,7 +51,8 @@ export function registerErrorHandler(app: FastifyInstance): void {
     return reply.status(500).send({ error: { code: 'internal_error', message: 'Something went wrong on our side.' } });
   });
 
+  if (options.notFound === false) return;
   app.setNotFoundHandler((request, reply) => {
-    reply.status(404).send({ error: { code: 'not_found', message: `No route for ${request.method} ${request.url}` } });
+    reply.status(404).send(notFoundBody(request.method, request.url));
   });
 }

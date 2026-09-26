@@ -12,14 +12,7 @@ export function levelFromValue(value: number): Level {
   return LEVELS[index]!;
 }
 
-export const SKILLS = [
-  'speaking',
-  'listening',
-  'vocabulary',
-  'grammar',
-  'pronunciation',
-  'fluency',
-] as const;
+export const SKILLS = ['speaking', 'listening', 'vocabulary', 'grammar', 'pronunciation', 'fluency'] as const;
 export const SkillSchema = z.enum(SKILLS);
 export type Skill = z.infer<typeof SkillSchema>;
 
@@ -27,13 +20,7 @@ export const REGISTERS = ['formal', 'neutral', 'informal'] as const;
 export const RegisterSchema = z.enum(REGISTERS);
 export type Register = z.infer<typeof RegisterSchema>;
 
-export const MISTAKE_CATEGORIES = [
-  'grammar',
-  'vocabulary',
-  'pronunciation',
-  'naturalness',
-  'register',
-] as const;
+export const MISTAKE_CATEGORIES = ['grammar', 'vocabulary', 'pronunciation', 'naturalness', 'register'] as const;
 export const MistakeCategorySchema = z.enum(MISTAKE_CATEGORIES);
 export type MistakeCategory = z.infer<typeof MistakeCategorySchema>;
 

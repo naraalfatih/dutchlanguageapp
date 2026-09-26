@@ -24,9 +24,7 @@ export const TurnFeedbackSchema = z.object({
   understood: z.boolean(),
   corrections: z.array(CorrectionSchema),
   /** A more natural way to say it, when the learner's sentence is fine but textbook-like. */
-  natural: z
-    .object({ nl: z.string(), en: z.string(), note: z.string().nullable() })
-    .nullable(),
+  natural: z.object({ nl: z.string(), en: z.string(), note: z.string().nullable() }).nullable(),
   /** Specific positive reinforcement ("Nice use of 'even'!"). */
   praise: z.string().nullable(),
 });

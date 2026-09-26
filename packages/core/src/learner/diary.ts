@@ -122,9 +122,7 @@ export function analyzePatterns(state: LearnerState, now: Date = new Date()): Pa
     .map((stats) => analyzePattern(state, stats, now))
     .sort(
       (a, b) =>
-        STATUS_ORDER[a.status] - STATUS_ORDER[b.status] ||
-        b.recentErrors - a.recentErrors ||
-        b.occurrences - a.occurrences,
+        STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || b.recentErrors - a.recentErrors || b.occurrences - a.occurrences,
     );
 }
 

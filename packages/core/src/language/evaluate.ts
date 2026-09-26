@@ -94,11 +94,10 @@ export function evaluateFreeResponse(text: string, task: FreeResponseTask = {}):
   const achieved = missing.length === 0 && words > 0;
   const score = Math.round((0.65 * coverage + 0.35 * accuracy) * 100) / 100;
 
-  let natural: TurnFeedback['natural'] = null;
-  const model = task.modelAnswers?.[task.modelAnswers.length > 1 ? 1 : 0];
-  if (model && achieved && foldText(model) !== foldText(detection.correctedText)) {
-    natural = { nl: model, en: 'Another natural way to say it.', note: null };
-  }
+  // Model answers are examples, not paraphrases of what the learner said ("een cappuccino"
+  // vs "mag ik een thee?"), so they are never offered as a "more natural" version here.
+  // Callers show them separately, labelled as examples.
+  const natural: TurnFeedback['natural'] = null;
 
   let praise: string | null = null;
   if (achieved && detection.corrections.length === 0) {

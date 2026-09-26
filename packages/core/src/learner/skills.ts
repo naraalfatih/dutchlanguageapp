@@ -25,10 +25,7 @@ export function initialSkillEstimate(level: Level): SkillEstimate {
 }
 
 export function initialSkills(level: Level): Record<Skill, SkillEstimate> {
-  return Object.fromEntries(SKILLS.map((skill) => [skill, initialSkillEstimate(level)])) as Record<
-    Skill,
-    SkillEstimate
-  >;
+  return Object.fromEntries(SKILLS.map((skill) => [skill, initialSkillEstimate(level)])) as Record<Skill, SkillEstimate>;
 }
 
 export interface Evidence {

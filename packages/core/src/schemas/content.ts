@@ -1,12 +1,5 @@
 import { z } from 'zod';
-import {
-  BilingualSchema,
-  GoalSchema,
-  LevelSchema,
-  RegionSchema,
-  RegisterSchema,
-  SkillSchema,
-} from './common.js';
+import { BilingualSchema, GoalSchema, LevelSchema, RegionSchema, RegisterSchema, SkillSchema } from './common.js';
 
 const id = z
   .string()
@@ -163,9 +156,7 @@ export const LessonSchema = z.object({
   pronunciation: z.object({
     focus: z.string().min(1),
     tip: z.string().min(1),
-    items: z
-      .array(z.object({ nl: z.string().min(1), en: z.string().optional(), hint: z.string().optional() }))
-      .min(2),
+    items: z.array(z.object({ nl: z.string().min(1), en: z.string().optional(), hint: z.string().optional() })).min(2),
   }),
   listening: z.object({
     intro: z.string().min(1),
@@ -183,12 +174,8 @@ export const LessonSchema = z.object({
   grammar: z.object({
     title: z.string().min(1),
     explanation: z.string().min(1),
-    examples: z
-      .array(z.object({ nl: z.string().min(1), en: z.string().min(1), highlight: z.string().optional() }))
-      .min(2),
-    commonMistake: z
-      .object({ wrong: z.string().min(1), right: z.string().min(1), why: z.string().min(1) })
-      .optional(),
+    examples: z.array(z.object({ nl: z.string().min(1), en: z.string().min(1), highlight: z.string().optional() })).min(2),
+    commonMistake: z.object({ wrong: z.string().min(1), right: z.string().min(1), why: z.string().min(1) }).optional(),
   }),
   culture: z.object({
     title: z.string().min(1),
@@ -259,15 +246,7 @@ export const SoundModuleSchema = z.object({
 });
 export type SoundModule = z.infer<typeof SoundModuleSchema>;
 
-export const LISTENING_KINDS = [
-  'conversation',
-  'street',
-  'news',
-  'podcast',
-  'workplace',
-  'voicemail',
-  'announcement',
-] as const;
+export const LISTENING_KINDS = ['conversation', 'street', 'news', 'podcast', 'workplace', 'voicemail', 'announcement'] as const;
 
 export const ListeningItemSchema = z.object({
   id,
@@ -275,27 +254,15 @@ export const ListeningItemSchema = z.object({
   kind: z.enum(LISTENING_KINDS),
   title: z.string().min(1),
   description: z.string().min(1),
-  speakers: z
-    .array(z.object({ id: z.string().min(1), name: z.string().min(1), voice: z.enum(['f', 'm']) }))
-    .min(1),
+  speakers: z.array(z.object({ id: z.string().min(1), name: z.string().min(1), voice: z.enum(['f', 'm']) })).min(1),
   lines: z.array(LineSchema).min(3),
   questions: z.array(QuestionSchema).min(2),
   vocab: z.array(z.object({ term: z.string().min(1), meaning: z.string().min(1) })).min(2),
-  slang: z.array(
-    z.object({ term: z.string().min(1), meaning: z.string().min(1), note: z.string().min(1) }),
-  ),
+  slang: z.array(z.object({ term: z.string().min(1), meaning: z.string().min(1), note: z.string().min(1) })),
 });
 export type ListeningItem = z.infer<typeof ListeningItemSchema>;
 
-export const EXPRESSION_CATEGORIES = [
-  'greetings',
-  'reactions',
-  'particles',
-  'fillers',
-  'social',
-  'slang',
-  'idioms',
-] as const;
+export const EXPRESSION_CATEGORIES = ['greetings', 'reactions', 'particles', 'fillers', 'social', 'slang', 'idioms'] as const;
 
 export const ExpressionSchema = z.object({
   id,

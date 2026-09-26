@@ -12,10 +12,7 @@ export interface TestApp {
   close(): Promise<void>;
 }
 
-export async function createTestApp(
-  overrides: Partial<Config> = {},
-  anthropicClient?: MessagesClient,
-): Promise<TestApp> {
+export async function createTestApp(overrides: Partial<Config> = {}, anthropicClient?: MessagesClient): Promise<TestApp> {
   const base = loadConfig({ NODE_ENV: 'test' });
   const config: Config = { ...base, ...overrides, ai: { ...base.ai, ...overrides.ai } };
   const database = await connectDatabase({});

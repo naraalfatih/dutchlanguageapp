@@ -31,7 +31,10 @@ export function migrationsFolder(): string {
  * Connect to PostgreSQL when a URL is given, otherwise to an embedded PGlite database
  * (in-memory, or persisted in `pgliteDir`). Both speak the same SQL dialect.
  */
-export async function connectDatabase(options: { databaseUrl?: string | undefined; pgliteDir?: string | undefined }): Promise<DatabaseHandle> {
+export async function connectDatabase(options: {
+  databaseUrl?: string | undefined;
+  pgliteDir?: string | undefined;
+}): Promise<DatabaseHandle> {
   if (options.databaseUrl) {
     const { default: postgres } = await import('postgres');
     const { drizzle } = await import('drizzle-orm/postgres-js');

@@ -27,12 +27,7 @@ export function pruneDays<T>(record: Record<string, T>, reference: Date | string
 }
 
 /** Sum values of a day-keyed record for days in [now - toDaysAgo, now - fromDaysAgo). */
-export function sumWindow(
-  record: Record<string, number>,
-  now: Date,
-  fromDaysAgo: number,
-  toDaysAgo: number,
-): number {
+export function sumWindow(record: Record<string, number>, now: Date, fromDaysAgo: number, toDaysAgo: number): number {
   const newest = dayKey(addDays(now, -fromDaysAgo));
   const oldest = dayKey(addDays(now, -toDaysAgo));
   let total = 0;

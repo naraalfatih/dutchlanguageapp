@@ -71,20 +71,18 @@ export async function issueRefreshToken(
 }
 
 export type RotationResult =
-  | { ok: true; userId: string; next: IssuedRefreshToken }
-  | { ok: false; reason: 'unknown' | 'expired' | 'reused' };
+  { ok: true; userId: string; next: IssuedRefreshToken } | { ok: false; reason: 'unknown' | 'expired' | 'reused' };
 
 /**
  * Rotate a refresh token. Presenting an already-rotated token means it was stolen (or
  * replayed): the whole token family is revoked, logging out every session derived from it.
  */
-export async function rotateRefreshToken(
-  db: Db,
-  config: Config,
-  token: string,
-  userAgent?: string,
-): Promise<RotationResult> {
-  const [row] = await db.select().from(refreshTokens).where(eq(refreshTokens.tokenHash, hashToken(token))).limit(1);
+export async function rotateRefreshToken(db: Db, config: Config, token: string, userAgent?: string): Promise<RotationResult> {
+  const [row] = await db
+    .select()
+    .from(refreshTokens)
+    .where(eq(refreshTokens.tokenHash, hashToken(token)))
+    .limit(1);
   if (!row) return { ok: false, reason: 'unknown' };
   if (row.revokedAt) {
     await revokeFamily(db, row.familyId);
@@ -108,6 +106,10 @@ export async function revokeFamily(db: Db, familyId: string): Promise<void> {
 }
 
 export async function revokeByToken(db: Db, token: string): Promise<void> {
-  const [row] = await db.select().from(refreshTokens).where(eq(refreshTokens.tokenHash, hashToken(token))).limit(1);
+  const [row] = await db
+    .select()
+    .from(refreshTokens)
+    .where(eq(refreshTokens.tokenHash, hashToken(token)))
+    .limit(1);
   if (row) await revokeFamily(db, row.familyId);
 }

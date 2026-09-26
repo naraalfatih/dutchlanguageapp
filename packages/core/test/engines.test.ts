@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Scenario } from '../src/schemas/content.js';
 import { TurnResponseSchema } from '../src/schemas/conversation.js';
-import {
-  scenarioAchieved,
-  scenarioTurn,
-  startScenario,
-} from '../src/conversation/scenario-engine.js';
+import { scenarioAchieved, scenarioTurn, startScenario } from '../src/conversation/scenario-engine.js';
 import { friendOpening, friendTurn } from '../src/conversation/friend-engine.js';
 import { tutorOpening, tutorTurn } from '../src/conversation/tutor-engine.js';
 import { glossFor } from '../src/conversation/glossary.js';
@@ -143,6 +139,44 @@ describe('tutor engine', () => {
 
 describe('glossary', () => {
   it('finds colloquial terms including hyphenated ones', () => {
-    expect(glossFor('Hé, hoe gaat-ie? Gezellig!').map((g) => g.term)).toEqual(expect.arrayContaining(['gezellig', 'hoe gaat-ie']));
+    expect(glossFor('Hé, hoe gaat-ie? Gezellig!').map((g) => g.term)).toEqual(
+      expect.arrayContaining(['gezellig', 'hoe gaat-ie']),
+    );
+  });
+});
+
+describe('shared offline partner and turn events', () => {
+  it('derives utterance, diary and scenario events from a turn', async () => {
+    const { turnEvents, offlineOpening, offlineReply, limitCorrections } = await import('../src/conversation/offline.js');
+    const { detectMistakes } = await import('../src/language/detector.js');
+    const corrections = detectMistakes('Ik ben heet Amira.').corrections;
+    const events = turnEvents({
+      mode: 'tutor',
+      level: 'A1',
+      text: 'Ik ben heet Amira.',
+      inputMode: 'voice',
+      latencyMs: 1234.4,
+      corrections,
+    });
+    expect(events.map((e) => e.type)).toEqual(['utterance.produced', 'mistake.recorded']);
+    const utterance = events[0]!;
+    expect(utterance.type === 'utterance.produced' && utterance.payload).toMatchObject({
+      errors: 1,
+      sentences: 1,
+      latencyMs: 1234,
+    });
+
+    const opening = offlineOpening({ mode: 'tutor', level: 'A1', correctionStyle: 'gentle', turnIndex: 0 });
+    expect(opening.response.reply.nl.length).toBeGreaterThan(0);
+    const reply = offlineReply({ mode: 'tutor', level: 'A1', correctionStyle: 'gentle', turnIndex: 0 }, 'Ik ben heet Amira.');
+    expect(reply.response.feedback?.corrections.some((c) => c.patternId === 'heten')).toBe(true);
+
+    const many = Array.from({ length: 5 }, (_, i) => ({
+      ...corrections[0]!,
+      severity: i === 4 ? ('meaning' as const) : ('naturalness' as const),
+    }));
+    const limited = limitCorrections(many, 'gentle');
+    expect(limited).toHaveLength(3);
+    expect(limited[0]!.severity).toBe('meaning');
   });
 });

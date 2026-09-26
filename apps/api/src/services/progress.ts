@@ -46,12 +46,7 @@ export async function loadLearnerState(db: Db, userId: string): Promise<LearnerS
     db.select().from(lessonProgress).where(eq(lessonProgress.userId, userId)),
     db.select().from(srsCards).where(eq(srsCards.userId, userId)),
     db.select().from(mistakePatternStats).where(eq(mistakePatternStats.userId, userId)),
-    db
-      .select()
-      .from(mistakes)
-      .where(eq(mistakes.userId, userId))
-      .orderBy(desc(mistakes.occurredAt))
-      .limit(RECENT_MISTAKES_LIMIT),
+    db.select().from(mistakes).where(eq(mistakes.userId, userId)).orderBy(desc(mistakes.occurredAt)).limit(RECENT_MISTAKES_LIMIT),
     db.select().from(skillEstimates).where(eq(skillEstimates.userId, userId)),
     db.select().from(canDoProgress).where(eq(canDoProgress.userId, userId)),
     db.select().from(learnerStats).where(eq(learnerStats.userId, userId)),
@@ -245,12 +240,7 @@ export interface IngestResult {
  * Store events idempotently (by client-generated id) and update the projections with the
  * shared reducer. Serialised per user with an advisory lock so concurrent syncs can't race.
  */
-export async function ingestEvents(
-  db: Db,
-  userId: string,
-  events: LearningEvent[],
-  deviceId?: string,
-): Promise<IngestResult> {
+export async function ingestEvents(db: Db, userId: string, events: LearningEvent[], deviceId?: string): Promise<IngestResult> {
   return db.transaction(async (tx) => {
     const t = tx as unknown as Db;
     await t.execute(sql`select pg_advisory_xact_lock(hashtext(${userId}))`);

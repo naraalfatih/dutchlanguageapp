@@ -4,16 +4,9 @@ import { IntentSchema } from './content.js';
 import { ConversationModeSchema, InputModeSchema, LearningEventSchema } from './events.js';
 import { ProfileSchema } from './profile.js';
 
-export const EmailSchema = z
-  .string()
-  .trim()
-  .toLowerCase()
-  .pipe(z.email().max(254));
+export const EmailSchema = z.string().trim().toLowerCase().pipe(z.email().max(254));
 
-export const PasswordSchema = z
-  .string()
-  .min(10, 'Use at least 10 characters.')
-  .max(200, 'Use at most 200 characters.');
+export const PasswordSchema = z.string().min(10, 'Use at least 10 characters.').max(200, 'Use at most 200 characters.');
 
 export const RegisterInputSchema = z.object({
   email: EmailSchema,

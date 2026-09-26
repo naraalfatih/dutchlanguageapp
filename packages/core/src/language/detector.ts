@@ -149,8 +149,7 @@ function ruleHeten(ctx: Ctx): Finding[] {
           patternId: 'heten',
           category: 'vocabulary',
           severity: 'grammar',
-          explanation:
-            "A name doesn't 'heet' — a person does. Say 'Mijn naam is …' or, more naturally, 'Ik heet …'.",
+          explanation: "A name doesn't 'heet' — a person does. Say 'Mijn naam is …' or, more naturally, 'Ik heet …'.",
         }),
       );
     }
@@ -174,7 +173,11 @@ function ruleAge(ctx: Ctx): Finding[] {
     const [s, v, n, j] = [tokens[i]!, tokens[i + 1]!, tokens[i + 2]!, tokens[i + 3]!];
     // "Ik heb vijf jaar gewerkt" is a duration; only flag when 'jaar (oud)' ends the clause.
     const after = tokens[i + 4];
-    const endsClause = !after || after.lower === 'oud' || CLAUSE_PUNCT.test(ctx.sentence.slice(j.end, after.start)) || COORDINATORS.has(after.lower);
+    const endsClause =
+      !after ||
+      after.lower === 'oud' ||
+      CLAUSE_PUNCT.test(ctx.sentence.slice(j.end, after.start)) ||
+      COORDINATORS.has(after.lower);
     if (SUBJECTS.has(s.lower) && TO_ZIJN[v.lower] && isNumberToken(n.lower) && j.lower === 'jaar' && endsClause) {
       out.push(
         finding({
@@ -287,9 +290,7 @@ function ruleHungerThirst(ctx: Ctx): Finding[] {
         start: verb.start,
         end: target.end,
         replacement:
-          matchCase(verb.text, TO_HEBBEN[verb.lower]!) +
-          ctx.sentence.slice(verb.end, target.start) +
-          nouns[target.lower],
+          matchCase(verb.text, TO_HEBBEN[verb.lower]!) + ctx.sentence.slice(verb.end, target.start) + nouns[target.lower],
         patternId: 'honger-dorst',
         category: bookish ? 'naturalness' : 'vocabulary',
         severity: bookish ? 'naturalness' : 'grammar',
@@ -310,8 +311,41 @@ const FRONTED_SINGLE = new Set(
     .split(/\s+/)
     .filter(Boolean),
 );
-const FRONTED_PREPOSITIONS = new Set(['in', 'op', 'om', 'na', 'tijdens', 'bij', 'elke', 'iedere', 'volgende', 'vorige', 'deze', 'dit', "'s"]);
-const NOT_A_VERB = new Set(['niet', 'ook', 'al', 'nog', 'graag', 'heel', 'erg', 'echt', 'wel', 'zeker', 'gewoon', 'even', 'toch', 'maar', 'dus', 'alleen', 'zelf', 'weer']);
+const FRONTED_PREPOSITIONS = new Set([
+  'in',
+  'op',
+  'om',
+  'na',
+  'tijdens',
+  'bij',
+  'elke',
+  'iedere',
+  'volgende',
+  'vorige',
+  'deze',
+  'dit',
+  "'s",
+]);
+const NOT_A_VERB = new Set([
+  'niet',
+  'ook',
+  'al',
+  'nog',
+  'graag',
+  'heel',
+  'erg',
+  'echt',
+  'wel',
+  'zeker',
+  'gewoon',
+  'even',
+  'toch',
+  'maar',
+  'dus',
+  'alleen',
+  'zelf',
+  'weer',
+]);
 
 function jijForm(verb: Token, subject: Token): string {
   if (subject.lower === 'jij' || subject.lower === 'je') {
@@ -362,7 +396,22 @@ function ruleWordOrderV2(ctx: Ctx): Finding[] {
   ];
 }
 
-const SUBORDINATORS = new Set(['omdat', 'dat', 'als', 'wanneer', 'terwijl', 'hoewel', 'zodat', 'voordat', 'nadat', 'totdat', 'zodra', 'toen', 'of', 'sinds']);
+const SUBORDINATORS = new Set([
+  'omdat',
+  'dat',
+  'als',
+  'wanneer',
+  'terwijl',
+  'hoewel',
+  'zodat',
+  'voordat',
+  'nadat',
+  'totdat',
+  'zodra',
+  'toen',
+  'of',
+  'sinds',
+]);
 const PARTICLES = new Set(['op', 'aan', 'mee', 'uit', 'af', 'terug', 'weg', 'in', 'door', 'langs', 'thuis']);
 
 function looksLikeVerbForm(lower: string): boolean {
@@ -423,8 +472,49 @@ function ruleVerbFinal(ctx: Ctx): Finding[] {
   return out;
 }
 
-const MODALS = new Set(['mag', 'kan', 'kun', 'kunt', 'wil', 'wilt', 'moet', 'zal', 'zullen', 'kunnen', 'mogen', 'willen', 'moeten', 'ga', 'gaat', 'gaan']);
-const EXTRAPOSABLE = new Set(['naar', 'met', 'in', 'op', 'om', 'bij', 'voor', 'aan', 'over', 'uit', 'van', 'tot', 'zonder', 'na', 'tegen', 'niet', 'want', 'maar', 'en', 'of', 'omdat', 'als', 'dat']);
+const MODALS = new Set([
+  'mag',
+  'kan',
+  'kun',
+  'kunt',
+  'wil',
+  'wilt',
+  'moet',
+  'zal',
+  'zullen',
+  'kunnen',
+  'mogen',
+  'willen',
+  'moeten',
+  'ga',
+  'gaat',
+  'gaan',
+]);
+const EXTRAPOSABLE = new Set([
+  'naar',
+  'met',
+  'in',
+  'op',
+  'om',
+  'bij',
+  'voor',
+  'aan',
+  'over',
+  'uit',
+  'van',
+  'tot',
+  'zonder',
+  'na',
+  'tegen',
+  'niet',
+  'want',
+  'maar',
+  'en',
+  'of',
+  'omdat',
+  'als',
+  'dat',
+]);
 
 /** Token indexes where a main clause can start (sentence start, after a comma or coordinator). */
 function clauseStarts(ctx: Ctx): number[] {
@@ -521,7 +611,34 @@ function ruleSeparable(ctx: Ctx): Finding[] {
   ];
 }
 
-const GAP_BLOCKERS = new Set(['ben', 'bent', 'is', 'zijn', 'heb', 'hebt', 'heeft', 'hebben', 'was', 'waren', 'had', 'hadden', 'wordt', 'werd', 'dat', 'die', 'waar', 'omdat', 'als', 'wanneer', 'wie', 'wat', 'of', 'toen', 'en', 'maar']);
+const GAP_BLOCKERS = new Set([
+  'ben',
+  'bent',
+  'is',
+  'zijn',
+  'heb',
+  'hebt',
+  'heeft',
+  'hebben',
+  'was',
+  'waren',
+  'had',
+  'hadden',
+  'wordt',
+  'werd',
+  'dat',
+  'die',
+  'waar',
+  'omdat',
+  'als',
+  'wanneer',
+  'wie',
+  'wat',
+  'of',
+  'toen',
+  'en',
+  'maar',
+]);
 
 function rulePerfectAuxiliary(ctx: Ctx): Finding[] {
   const out: Finding[] = [];
@@ -570,7 +687,27 @@ function rulePerfectAuxiliary(ctx: Ctx): Finding[] {
   return out;
 }
 
-const NP_DETERMINERS = new Set(['de', 'het', 'een', 'geen', 'deze', 'dit', 'die', 'mijn', 'jouw', 'haar', 'ons', 'onze', 'hun', 'uw', 'elk', 'elke', 'ieder', 'iedere', "zo'n"]);
+const NP_DETERMINERS = new Set([
+  'de',
+  'het',
+  'een',
+  'geen',
+  'deze',
+  'dit',
+  'die',
+  'mijn',
+  'jouw',
+  'haar',
+  'ons',
+  'onze',
+  'hun',
+  'uw',
+  'elk',
+  'elke',
+  'ieder',
+  'iedere',
+  "zo'n",
+]);
 const INDEFINITE_FOR_HET = new Set(['een', 'geen', 'elk', 'ieder', "zo'n"]);
 const JUDGEMENT_VERBS = new Set(['vind', 'vindt', 'vinden', 'maak', 'maakt', 'maken', 'noem', 'noemt', 'wordt', 'werd']);
 
@@ -671,7 +808,23 @@ function ruleNounPhrase(ctx: Ctx): Finding[] {
   return out;
 }
 
-const UNCOUNTABLE = new Set(['tijd', 'geld', 'zin', 'honger', 'dorst', 'werk', 'kinderen', 'huisdieren', 'idee', 'probleem', 'auto', 'fiets', 'broer', 'zus', 'vrienden']);
+const UNCOUNTABLE = new Set([
+  'tijd',
+  'geld',
+  'zin',
+  'honger',
+  'dorst',
+  'werk',
+  'kinderen',
+  'huisdieren',
+  'idee',
+  'probleem',
+  'auto',
+  'fiets',
+  'broer',
+  'zus',
+  'vrienden',
+]);
 
 function ruleGeenNiet(ctx: Ctx): Finding[] {
   const out: Finding[] = [];
@@ -711,7 +864,21 @@ function ruleGeenNiet(ctx: Ctx): Finding[] {
 }
 
 const OBJECT_FORM: Record<string, string> = { ik: 'mij', jij: 'jou', hij: 'hem', wij: 'ons', we: 'ons', zij: 'haar' };
-const PREPOSITIONS = new Set(['met', 'aan', 'bij', 'van', 'naar', 'over', 'zonder', 'tegen', 'naast', 'achter', 'tussen', 'voor', 'na']);
+const PREPOSITIONS = new Set([
+  'met',
+  'aan',
+  'bij',
+  'van',
+  'naar',
+  'over',
+  'zonder',
+  'tegen',
+  'naast',
+  'achter',
+  'tussen',
+  'voor',
+  'na',
+]);
 
 function ruleObjectPronouns(ctx: Ctx): Finding[] {
   const out: Finding[] = [];
@@ -741,9 +908,21 @@ function ruleAgreement(ctx: Ctx): Finding[] {
   const { tokens } = ctx;
   const fixes: [Set<string>, Record<string, string>, string][] = [
     [new Set(['ik']), { heeft: 'heb', hebt: 'heb', hebben: 'heb', bent: 'ben', is: 'ben' }, "With 'ik': ik ben, ik heb."],
-    [new Set(['hij']), { heb: 'heeft', hebben: 'heeft', hebt: 'heeft', ben: 'is', bent: 'is' }, "With 'hij/zij (she)': hij is, hij heeft."],
-    [new Set(['jij', 'je']), { ben: 'bent', heb: 'hebt' }, "With 'jij' before the verb: jij bent, jij hebt. (The -t only drops when jij comes after the verb: 'Ben jij…?')"],
-    [new Set(['we', 'wij', 'jullie']), { is: 'zijn', ben: 'zijn', bent: 'zijn', heb: 'hebben', hebt: 'hebben', heeft: 'hebben' }, 'Plural subjects take the plural verb: we zijn, we hebben.'],
+    [
+      new Set(['hij']),
+      { heb: 'heeft', hebben: 'heeft', hebt: 'heeft', ben: 'is', bent: 'is' },
+      "With 'hij/zij (she)': hij is, hij heeft.",
+    ],
+    [
+      new Set(['jij', 'je']),
+      { ben: 'bent', heb: 'hebt' },
+      "With 'jij' before the verb: jij bent, jij hebt. (The -t only drops when jij comes after the verb: 'Ben jij…?')",
+    ],
+    [
+      new Set(['we', 'wij', 'jullie']),
+      { is: 'zijn', ben: 'zijn', bent: 'zijn', heb: 'hebben', hebt: 'hebben', heeft: 'hebben' },
+      'Plural subjects take the plural verb: we zijn, we hebben.',
+    ],
   ];
   for (let i = 0; i + 1 < tokens.length; i++) {
     const subject = tokens[i]!;
@@ -766,7 +945,19 @@ function ruleAgreement(ctx: Ctx): Finding[] {
   return out;
 }
 
-const QUESTION_WORDS = new Set(['wat', 'waar', 'wanneer', 'hoe', 'waarom', 'hoeveel', 'welke', 'wie', 'hoelang', 'waarheen', 'waarvandaan']);
+const QUESTION_WORDS = new Set([
+  'wat',
+  'waar',
+  'wanneer',
+  'hoe',
+  'waarom',
+  'hoeveel',
+  'welke',
+  'wie',
+  'hoelang',
+  'waarheen',
+  'waarvandaan',
+]);
 
 function ruleJijInversion(ctx: Ctx): Finding[] {
   const out: Finding[] = [];
@@ -818,7 +1009,27 @@ function ruleUnits(ctx: Ctx): Finding[] {
   return out;
 }
 
-const ONGOING_VERBS = new Set(['woon', 'woont', 'wonen', 'werk', 'werkt', 'werken', 'leer', 'leert', 'leren', 'studeer', 'studeert', 'studeren', 'ken', 'kent', 'kennen', 'ben', 'bent', 'is', 'zijn']);
+const ONGOING_VERBS = new Set([
+  'woon',
+  'woont',
+  'wonen',
+  'werk',
+  'werkt',
+  'werken',
+  'leer',
+  'leert',
+  'leren',
+  'studeer',
+  'studeert',
+  'studeren',
+  'ken',
+  'kent',
+  'kennen',
+  'ben',
+  'bent',
+  'is',
+  'zijn',
+]);
 const DURATION_UNITS = new Set(['jaar', 'jaren', 'maand', 'maanden', 'week', 'weken', 'dag', 'dagen']);
 
 function ruleDuration(ctx: Ctx): Finding[] {
@@ -830,7 +1041,8 @@ function ruleDuration(ctx: Ctx): Finding[] {
     if (tokens[k]?.lower === 'een' && tokens[k + 1]?.lower === 'paar') k++;
     const amount = tokens[k];
     const unit = tokens[k + 1];
-    if (!amount || !unit || !(isNumberToken(amount.lower) || amount.lower === 'paar') || !DURATION_UNITS.has(unit.lower)) continue;
+    if (!amount || !unit || !(isNumberToken(amount.lower) || amount.lower === 'paar') || !DURATION_UNITS.has(unit.lower))
+      continue;
     const verbIndex = tokens.findIndex((t, idx) => idx < i && ONGOING_VERBS.has(t.lower));
     if (verbIndex < 0) continue;
     const verb = tokens[verbIndex]!;
@@ -904,7 +1116,12 @@ function ruleAnglicisms(ctx: Ctx): Finding[] {
         });
       }
     }
-    if (['had', 'hadden', 'heb', 'hebben', 'hebt', 'heeft'].includes(t.lower) && tokens[i + 1]?.lower === 'een' && ['goede', 'geweldige'].includes(tokens[i + 2]?.lower ?? '') && tokens[i + 3]?.lower === 'tijd') {
+    if (
+      ['had', 'hadden', 'heb', 'hebben', 'hebt', 'heeft'].includes(t.lower) &&
+      tokens[i + 1]?.lower === 'een' &&
+      ['goede', 'geweldige'].includes(tokens[i + 2]?.lower ?? '') &&
+      tokens[i + 3]?.lower === 'tijd'
+    ) {
       out.push({
         start: tokens[i + 1]!.start,
         end: tokens[i + 3]!.end,
@@ -924,14 +1141,34 @@ function ruleAnglicisms(ctx: Ctx): Finding[] {
         patternId: 'word-choice',
         category: 'vocabulary',
         severity: 'grammar',
-        explanation: "'Interesse' is a noun, so you *have* it: 'Ik heb interesse in…' — or use the adjective: 'Ik ben geïnteresseerd in…'.",
+        explanation:
+          "'Interesse' is a noun, so you *have* it: 'Ik heb interesse in…' — or use the adjective: 'Ik ben geïnteresseerd in…'.",
       });
     }
   }
   return out;
 }
 
-const FORMAL_VERB: Record<string, string> = { heb: 'hebt', kun: 'kunt', kan: 'kunt', wil: 'wilt', ben: 'bent', ga: 'gaat', kom: 'komt', woon: 'woont', werk: 'werkt', spreek: 'spreekt', doe: 'doet', zie: 'ziet', vind: 'vindt', neem: 'neemt', wacht: 'wacht', moet: 'moet', weet: 'weet', mag: 'mag' };
+const FORMAL_VERB: Record<string, string> = {
+  heb: 'hebt',
+  kun: 'kunt',
+  kan: 'kunt',
+  wil: 'wilt',
+  ben: 'bent',
+  ga: 'gaat',
+  kom: 'komt',
+  woon: 'woont',
+  werk: 'werkt',
+  spreek: 'spreekt',
+  doe: 'doet',
+  zie: 'ziet',
+  vind: 'vindt',
+  neem: 'neemt',
+  wacht: 'wacht',
+  moet: 'moet',
+  weet: 'weet',
+  mag: 'mag',
+};
 
 function ruleRegister(ctx: Ctx): Finding[] {
   const { tokens, sentence, options } = ctx;

@@ -27,3 +27,4 @@ export * from './conversation/glossary.js';
 export * from './conversation/scenario-engine.js';
 export * from './conversation/friend-engine.js';
 export * from './conversation/tutor-engine.js';
+export * from './conversation/offline.js';
