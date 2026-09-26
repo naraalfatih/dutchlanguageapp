@@ -41,19 +41,25 @@
 │   │   │   ├── server.ts            buildServer(): plugins, routes, error handler
 │   │   │   ├── db/                  drizzle schema, client (pg | pglite), migrations
 │   │   │   ├── auth/                password hashing, JWT, refresh-token rotation
-│   │   │   ├── modules/             route modules (auth, me, sync, progress,
+│   │   │   ├── routes/              route modules (auth, me, sync, progress,
 │   │   │   │                        conversations, evaluate, speech, health)
 │   │   │   ├── ai/                  provider interface, Claude provider,
-│   │   │   │                        offline provider, prompts
-│   │   │   └── services/            progress projection, conversation service
-│   │   └── test/                    integration tests (fastify.inject + PGlite)
+│   │   │   │                        offline provider, prompts, correction merge
+│   │   │   └── services/            progress projection, conversations, profile,
+│   │   │                            AI usage quota
+│   │   └── test/                    integration tests (fastify.inject + PGlite,
+│   │                                fake Claude client)
 │   └── web/                 React PWA
-│       └── src/
-│           ├── app/                 shell, router, bottom nav
-│           ├── features/            home, learn, practice, talk, culture,
-│           │                        progress, profile, onboarding
-│           ├── components/          design-system primitives
-│           └── lib/                 audio, api client, learner store, sync
+│       ├── src/
+│       │   ├── App.tsx              shell, router, bottom nav, onboarding gate
+│       │   ├── screens/             home, learn + lesson player, practice (review,
+│       │   │                        pronunciation, listening, drills, natural
+│       │   │                        Dutch), talk + chat, culture, progress +
+│       │   │                        mistake diary, profile, account, onboarding
+│       │   ├── components/          design-system primitives, audio button,
+│       │   │                        speak-or-type input, feedback card, exercises
+│       │   └── lib/                 api client, local-first store + sync, speech
+│       └── e2e/                     Playwright smoke tests (mobile viewport)
 ├── packages/
 │   ├── core/                Pure domain logic, no I/O, shared by web + api
 │   │   └── src/
@@ -64,7 +70,8 @@
 │   │       ├── pronunciation/       transcript alignment + sound attribution
 │   │       ├── learner/             skill model, event reducer, planner,
 │   │       │                        mistake-diary analytics, can-do
-│   │       └── conversation/        offline scenario engine + friend engine
+│   │       └── conversation/        offline scenario, friend and tutor engines,
+│   │                                shared offline partner + turn events
 │   └── content/             Curriculum data (validated by core schemas)
 │       └── src/
 │           ├── lessons/             A0 … C1 lessons
@@ -89,7 +96,7 @@
 | Database | PostgreSQL 16 via Drizzle ORM | Relational integrity for users and progress, JSONB for event payloads and feedback, horizontal read scaling. Drizzle is typed and lightweight, with SQL-first migrations. |
 | Dev/test database | **PGlite** (Postgres compiled to WASM) | Real Postgres semantics with zero setup. Tests run in-process in milliseconds. |
 | Auth | Email + password (scrypt), short-lived JWT access token (15 min) plus rotating refresh token in an httpOnly cookie, with reuse detection | Standard, stateless API auth and revocable sessions. OAuth/Sign in with Apple is on the roadmap. |
-| AI | Claude via `@anthropic-ai/sdk`, **structured outputs** (`messages.parse` + zod) | Reply and corrections come back as validated JSON, so there is no fragile text parsing. A provider interface allows an **offline provider** (rule-based) for development, tests, guests and outages. |
+| AI | Claude via `@anthropic-ai/sdk`, **structured outputs** (`output_config.format` from a zod schema, validated with the same schema) | Reply and corrections come back as validated JSON, so there is no fragile text parsing. A provider interface allows an **offline provider** (rule-based) for development, tests, guests and outages. It is the same engine the app runs offline. |
 | Speech | Browser Web Speech API by default; pluggable server STT/TTS | Works today on Chrome/Android and Safari/iOS at no cost. The server providers (neural TTS with caching, Whisper-class STT) are behind an interface. |
 
 ## 4.4 Event-sourced progress
@@ -141,26 +148,40 @@ uses each event's `occurredAt` for elapsed time).
 learner text (typed or STT)
    │
    ├─► rule-based detector (@praat/core)  → high-precision corrections (patternIds)
+   ├─► scenarios: keyword/intent check of the current beat (a hint for the model)
    │
-   ├─► AiProvider.respond({mode, persona, level, scenario beat, history, text,
-   │                        detectorHints})
-   │      AnthropicProvider:
-   │        system = persona + pedagogy rules + pattern catalogue (stable, cached)
-   │        messages = trimmed history + learner turn
-   │        output_config.format = zod schema (TurnResponse)
-   │      OfflineProvider:
-   │        scenario engine (beats + intents) / friend engine (topics)
+   ├─► AiProvider.reply(ctx, text)
+   │      AnthropicProvider (one beta.messages.create call):
+   │        system   = core rules + pattern catalogue (cached)
+   │                 + character/scenario/learner profile (cached)
+   │        messages = recent history (cache breakpoint on the last turn)
+   │                 + <turn_context> (beat, success criteria, rule-checker
+   │                   findings) + <learner_message>
+   │        output_config = { effort: low, format: zod schema }
+   │        fallbacks: "default" (server-side refusal fallback, beta)
+   │        → refusal / invalid / truncated / network error → OfflineProvider
+   │      OfflineProvider (@praat/core offlineReply):
+   │        scenario engine (beats + intents) / friend engine / tutor engine
    │
-   ├─► merge + dedupe corrections (detector wins on the same span)
+   ├─► merge corrections (detector wins on the same pattern or span), limit by
+   │   correction style; scenario state advances with the shared
+   │   nextScenarioState(): model judgement first, keyword check as fallback,
+   │   move on after two attempts
    │
-   ├─► persist message + feedback; emit mistake.recorded + utterance.produced events
+   ├─► persist messages + engine state (optimistic lock on the turn counter);
+   │   derive and ingest events: utterance.produced, mistake.recorded,
+   │   scenario.completed (turnEvents() in @praat/core)
    │
-   └─► response {reply {nl, en}, feedback {corrections[], natural?, praise?},
-                 glossary[], task {beatId, achieved, done}}
+   └─► {conversationId, turn: {reply {nl, en}, feedback {corrections[], natural,
+        praise}, glossary[], task {beatId, achieved, completed, progress,
+        nextTask}, source}, events[]}
 ```
 
-`TurnResponse` is a single zod schema in `@praat/core` and is used for the
-Claude structured-output format, the offline provider and the client.
+`TurnResponse` is a single zod schema in `@praat/core`, shared by the API, the offline
+provider and the client. The model's own output schema (`AiTurnSchema`) adds
+`taskAchieved` for scenarios. When offline or signed out, the app runs
+`offlineReply()` and `turnEvents()` locally, so practice conversations work in airplane mode
+and produce the same learning evidence.
 
 Prompt design (see `apps/api/src/ai/prompts.ts`):
 
@@ -175,8 +196,8 @@ Prompt design (see `apps/api/src/ai/prompts.ts`):
 
 | Capability | Default (free, on-device) | Pluggable server provider |
 |---|---|---|
-| Text-to-speech | `speechSynthesis` with the best `nl-NL` / `nl-BE` voice; rate 1.0 normal, 0.75 slow; per-speaker voice/pitch in dialogues | `GET /api/v1/speech/tts?text&voice&rate` → cached audio (content-hash key), e.g. neural voices; the client caches responses (Cache API) for offline replay |
-| Speech-to-text | `SpeechRecognition` (`nl-NL`, interim results, 3 alternatives) | `POST /api/v1/speech/transcribe` (audio/webm, opus) → transcript + confidence |
+| Text-to-speech | `speechSynthesis` with the best `nl-NL` / `nl-BE` voice (region from the profile, user-selectable); the learner's rate (default 1.0), slow = 0.7×; a different voice per speaker in dialogues | `GET /api/v1/speech/tts?text&voice&rate` → cached audio (content-hash key), e.g. neural voices; the client caches responses (Cache API) for offline replay |
+| Speech-to-text | `SpeechRecognition` (`nl-NL` / `nl-BE`, interim results, 5 alternatives for pronunciation scoring). Results land in the text field before sending, so recognition errors never become "mistakes" | `POST /api/v1/speech/transcribe` (audio/webm, opus) → transcript + confidence |
 | Recording | `MediaRecorder` (webm/opus or mp4/aac on iOS) for shadowing and self-comparison | the same blob can be sent to STT |
 | Pronunciation scoring | `@praat/core` alignment of target vs transcript → per-word match, sound attribution (g, ch, ui, eu, ij, r, oe, uu, long/short vowels) | a phoneme-level scorer (e.g. a pronunciation-assessment API) can replace the heuristic behind the same interface |
 
@@ -187,7 +208,11 @@ the UI never pretends otherwise.
 
 ## 4.7 Performance budget (mobile)
 
-- Initial JS under 180 KB gzip. Routes and content by level are code-split (`import()`).
+- Target: initial JS under 180 KB gzip. **Current: about 260 KB gzip**. Every screen except Home
+  and Onboarding is code-split, but the whole curriculum (A0–C1, all modules) ships in the
+  first load. Next step: split `@praat/content` per level and load it with `import()`.
+  The service worker precaches everything (~930 KB), so repeat visits and offline use
+  don't pay this again.
 - Time to interactive under 2.5 s on a mid-range Android over 4G. Repeat visits are instant thanks to the precache.
 - API p95 under 150 ms for non-AI endpoints. AI turns stream a typing indicator; the target is p50 under 3 s.
 - Images are optional, lazy-loaded, and sized with `srcset`.
@@ -206,8 +231,23 @@ the UI never pretends otherwise.
 
 ## 4.9 Observability
 
-- Structured JSON logs (pino via Fastify) with request IDs. PII is redacted
-  (`authorization`, `cookie`, `password`).
+- Structured JSON logs (pino via Fastify) with request IDs. Request bodies are not logged;
+  `authorization`, `cookie` and `set-cookie` headers are redacted.
 - Health endpoint `/api/v1/health` (DB ping, AI provider mode).
 - Metrics (roadmap): AI latency/tokens per turn, sync lag, error rates.
 - Learning analytics are computed from `learning_events` (the source of truth), so any metric can be backfilled.
+
+## 4.10 Deployment
+
+- **Single container** (`Dockerfile`): a multi-stage build compiles the PWA (Vite) and bundles the
+  API (esbuild, workspace packages inlined). The runtime image contains only the API's
+  production dependencies, the SQL migrations and the static web build. Fastify serves the
+  app with an SPA fallback: hashed assets are `immutable`, and the shell and service worker
+  use `no-cache`. It runs as a non-root user with a health check.
+- **Local production-like stack:** `docker compose up --build` (PostgreSQL 17 plus the app,
+  migrations on start).
+- **Migrations:** `node dist/db/migrate.js` (or `npm run db:migrate -w @praat/api`) before
+  starting a new version; `MIGRATE_ON_START=true` for single-instance setups.
+- **CI** (`.github/workflows/ci.yml`): lint, format, typecheck, unit/integration tests, build,
+  runtime dependency audit; Playwright smoke tests on a mobile viewport; and a job that
+  migrates and exercises the API on a real PostgreSQL service.

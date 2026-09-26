@@ -14,7 +14,7 @@ export interface AiProviders {
 export function createAiProviders(config: Config['ai'], log?: Log, client?: MessagesClient): AiProviders {
   const offline = new OfflineProvider();
   if (!client && !config.apiKey) return { primary: offline, offline };
-  const messages = client ?? new Anthropic({ apiKey: config.apiKey, maxRetries: 2, timeout: 60_000 });
+  const messages = client ?? new Anthropic({ apiKey: config.apiKey, maxRetries: 1, timeout: 45_000 });
   const primary = new AnthropicProvider(
     messages,
     { model: config.model, effort: config.effort, maxTokens: config.maxTokens, fallbacks: config.fallbacks },

@@ -202,7 +202,7 @@ export function Onboarding() {
           {sttSupported() && (
             <p className="small muted row">
               <Mic size={16} aria-hidden /> We only listen while the microphone button is on. Your browser turns your speech into
-              text; we don't store recordings.
+              text (Chrome uses Google's servers for this); Praat never receives or stores recordings.
             </p>
           )}
           {!micResult ? (

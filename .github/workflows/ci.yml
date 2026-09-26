@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Audit runtime dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+  e2e:
+    name: End-to-end (Playwright, mobile Chromium)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build -w @praat/web
+      - run: npx playwright install --with-deps chromium
+        working-directory: apps/web
+      - run: npm run e2e -w @praat/web
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: apps/web/test-results
+          retention-days: 7
+
+  postgres:
+    name: API on PostgreSQL
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: praat
+          POSTGRES_PASSWORD: praat
+          POSTGRES_DB: praat
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U praat -d praat"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      NODE_ENV: production
+      DATABASE_URL: postgres://praat:praat@localhost:5432/praat
+      JWT_SECRET: ci-only-secret-with-at-least-thirty-two-characters
+      PORT: 8787
+      COOKIE_SECURE: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build -w @praat/api
+      - name: Migrate
+        working-directory: apps/api
+        run: node dist/db/migrate.js
+      - name: Smoke test
+        working-directory: apps/api
+        run: |
+          node dist/index.js &
+          for i in $(seq 1 30); do curl -sf localhost:8787/api/v1/health && break; sleep 1; done
+          token=$(curl -sf -X POST localhost:8787/api/v1/auth/register -H 'content-type: application/json' \
+            -d '{"email":"ci@example.com","password":"a long enough password","displayName":"CI"}' | node -pe 'JSON.parse(require("fs").readFileSync(0)).accessToken')
+          conv=$(curl -sf -X POST localhost:8787/api/v1/conversations -H "authorization: Bearer $token" -H 'content-type: application/json' \
+            -d '{"mode":"tutor","level":"A1"}' | node -pe 'JSON.parse(require("fs").readFileSync(0)).conversation.id')
+          curl -sf -X POST "localhost:8787/api/v1/conversations/$conv/turns" -H "authorization: Bearer $token" -H 'content-type: application/json' \
+            -d '{"text":"Ik ben heet Amira."}' | grep -q '"patternId":"heten"'
+          curl -sf localhost:8787/api/v1/progress/state -H "authorization: Bearer $token" | grep -q '"heten"'
+          echo "PostgreSQL smoke test passed"

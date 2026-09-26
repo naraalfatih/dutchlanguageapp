@@ -250,8 +250,8 @@ export default function Profile() {
       <section className="stack">
         <h2>Your data</h2>
         <p className="small muted" style={{ margin: 0 }}>
-          We store your learning activity to personalise practice. We don't store voice recordings: speech is turned into text on
-          your device or by your browser.
+          We store your learning activity to personalise practice. We never receive or store your voice: your browser's speech
+          recognition turns it into text (some browsers, like Chrome, do this on their own servers).
         </p>
         <div className="row wrap">
           <button

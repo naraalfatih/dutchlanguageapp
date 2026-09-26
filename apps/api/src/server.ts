@@ -45,6 +45,8 @@ export async function buildServer(options: BuildOptions): Promise<FastifyInstanc
           }),
     trustProxy: config.trustProxy,
     bodyLimit: 64 * 1024,
+    // Longest legitimate request: one AI turn (45 s SDK timeout, one retry).
+    requestTimeout: 120_000,
   });
 
   const ai = options.ai ?? createAiProviders(config.ai, app.log, options.anthropicClient);
@@ -58,8 +60,8 @@ export async function buildServer(options: BuildOptions): Promise<FastifyInstanc
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        fontSrc: ["'self'"],
         imgSrc: ["'self'", 'data:', 'blob:'],
         mediaSrc: ["'self'", 'blob:'],
         connectSrc: ["'self'"],
@@ -69,6 +71,8 @@ export async function buildServer(options: BuildOptions): Promise<FastifyInstanc
         frameAncestors: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
+        // Only for HTTPS deployments; on plain http (local network testing) it would break assets.
+        upgradeInsecureRequests: config.cookieSecure ? [] : null,
       },
     },
     // Microphone is needed for speaking practice; everything else is off.

@@ -1,0 +1,41 @@
+# Local production-like stack: `JWT_SECRET=$(openssl rand -base64 48) docker compose up --build`
+# then open http://localhost:8787. Set ANTHROPIC_API_KEY to enable the AI conversation partner.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: praat
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-praat}
+      POSTGRES_DB: praat
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U praat -d praat']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '8787:8787'
+    environment:
+      DATABASE_URL: postgres://praat:${POSTGRES_PASSWORD:-praat}@db:5432/praat
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET (at least 32 characters)}
+      MIGRATE_ON_START: 'true'
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8787}
+      # Plain-http localhost only. Behind HTTPS in production, leave this unset (secure cookies)
+      # and set TRUST_PROXY=true when a reverse proxy terminates TLS.
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-claude-opus-5}
+      AI_FALLBACKS: ${AI_FALLBACKS:-true}
+      AI_DAILY_TURN_LIMIT: ${AI_DAILY_TURN_LIMIT:-200}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+
+volumes:
+  db-data:
