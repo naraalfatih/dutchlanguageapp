@@ -1,0 +1,17 @@
+{
+  "name": "@praat/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pure learning engine shared by the Praat app and API: schemas, FSRS, mistake detection, evaluation, learner model, planner.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.1.0"
+  }
+}

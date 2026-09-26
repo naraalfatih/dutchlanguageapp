@@ -1,0 +1,17 @@
+{
+  "name": "@praat/content",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Praat curriculum and learning content (A0–C1), validated against @praat/core schemas.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@praat/core": "*"
+  }
+}
