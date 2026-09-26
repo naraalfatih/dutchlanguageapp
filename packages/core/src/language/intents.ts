@@ -1,17 +1,21 @@
 import type { Intent } from '../schemas/content.js';
 import { escapeRegExp, foldText } from './normalize.js';
 
+const NUMBER =
+  '\\d+(?:[.,:]\\d+)?|(?:(?:een|twee|drie|vier|vijf|zes|zeven|acht|negen)en)?(?:twintig|dertig|veertig|vijftig|zestig|zeventig|tachtig|negentig)|een|twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien|zestien|zeventien|achttien|negentien|honderd|duizend';
+
 /**
  * Compile one intent term. Syntax: `alt|alt|…`, each alternative a word or phrase
  * matched on word boundaries; a trailing `*` on the last word matches a prefix
- * (`afspra*` matches "afspraak", "afspraken").
+ * (`afspra*` matches "afspraak", "afspraken"); `#num` matches any number (digits or words).
  */
 function compileTerm(term: string): RegExp {
   const alternatives = term
     .split('|')
-    .map((alt) => foldText(alt.replace(/\*$/, '')) + (alt.trim().endsWith('*') ? '*' : ''))
+    .map((alt) => (alt.trim() === '#num' ? '#num' : foldText(alt.replace(/\*$/, '')) + (alt.trim().endsWith('*') ? '*' : '')))
     .filter((alt) => alt.length > 0)
     .map((alt) => {
+      if (alt === '#num') return `(?:${NUMBER})`;
       const prefix = alt.endsWith('*');
       const body = escapeRegExp(prefix ? alt.slice(0, -1) : alt).replace(/ /g, '\\s+');
       return prefix ? `${body}[\\p{L}\\d']*` : body;

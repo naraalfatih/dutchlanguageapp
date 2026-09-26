@@ -1,0 +1,556 @@
+import { defineLesson, i, line } from '../helpers.js';
+
+export const a1Lessons = [
+  defineLesson({
+    id: 'a1.family',
+    level: 'A1',
+    unit: 'Family',
+    order: 1,
+    title: 'Family: Heb je broers of zussen?',
+    subtitle: "Talk about your family and ask about someone else's",
+    canDo: 'I can talk about my family and ask others about theirs.',
+    minutes: 10,
+    situation: {
+      setting: 'Lunch break at work. Your colleague Fatima shows you a photo on her phone.',
+      dialogue: [
+        line('Fatima', 'Kijk, dit is mijn familie. Dit zijn mijn ouders.', 'Look, this is my family. These are my parents.'),
+        line('You', 'Wat leuk! En wie is dat?', "How nice! And who's that?"),
+        line('Fatima', 'Dat is mijn broer, Youssef. Hij woont in Brussel.', "That's my brother, Youssef. He lives in Brussels."),
+        line('You', 'Heb je ook zussen?', 'Do you have sisters too?'),
+        line('Fatima', 'Ja, één zus. Zij heeft twee kinderen. En jij? Heb jij broers of zussen?', 'Yes, one sister. She has two children. And you? Do you have brothers or sisters?'),
+        line('You', 'Nee, ik ben enig kind. Maar ik heb wel een vriend. Hij heet Daniel.', "No, I'm an only child. But I do have a boyfriend. His name is Daniel."),
+        line('Fatima', 'Leuk! Wonen jullie samen?', 'Nice! Do you live together?'),
+        line('You', 'Ja, we wonen samen in Zwolle.', 'Yes, we live together in Zwolle.'),
+      ],
+    },
+    vocabulary: [
+      ['mijn-ouders', 'mijn ouders', 'my parents', 'Mijn ouders wonen in Spanje.', 'My parents live in Spain.', { note: 'Mijn vader (father), mijn moeder (mother).' }],
+      ['broer-zus', 'een broer / een zus', 'a brother / a sister', 'Ik heb een broer en twee zussen.', 'I have a brother and two sisters.', { article: 'de' }],
+      ['heb-je-kinderen', 'Heb je kinderen?', 'Do you have children?', 'Heb je kinderen? – Ja, een zoon en een dochter.', 'Do you have children? – Yes, a son and a daughter.', { note: 'Het kind (child), de kinderen (children); de zoon, de dochter.' }],
+      ['enig-kind', 'Ik ben enig kind', "I'm an only child", 'Ik ben enig kind, dus ik heb geen broers of zussen.', "I'm an only child, so I don't have any brothers or sisters.", { band: 2 }],
+      ['getrouwd', 'Ik ben getrouwd', "I'm married", 'Ik ben getrouwd en ik heb een dochter.', "I'm married and I have a daughter.", { note: 'Also: samenwonen (to live together).' }],
+      ['mijn-vriend', 'mijn vriend / mijn vriendin', 'my boyfriend / my girlfriend (or friend)', 'Dit is mijn vriendin, Lotte.', 'This is my girlfriend, Lotte.', { note: "Context decides: 'mijn vriend' often means boyfriend. To be clear: 'een vriend van me' (a friend of mine)." }],
+      ['wie-is-dat', 'Wie is dat?', 'Who is that?', 'Wie is dat op de foto? – Dat is mijn oma.', "Who is that in the photo? – That's my grandma."],
+      ['familie', 'de familie', 'the (extended) family', 'Met Kerst zie ik mijn hele familie.', 'At Christmas I see my whole family.', { article: 'de', note: "'Familie' = all your relatives. Your household (partner + kids) = het gezin." }],
+    ],
+    pronunciation: {
+      focus: 'oe',
+      tip: "OE is one sound: a short 'oo' as in 'food', lips rounded. You'll need it for 'moeder', 'broer' and 'goed'.",
+      items: [
+        { nl: 'mijn moeder en mijn broer', en: 'my mother and my brother' },
+        { nl: 'Hoe gaat het met je moeder?', en: "How's your mother?" },
+        { nl: 'Mijn broer woont in Brussel.', en: 'My brother lives in Brussels.' },
+      ],
+    },
+    listening: {
+      intro: "Tom talks about his family. How many children does his sister have?",
+      lines: [
+        line('Tom', 'Ik kom uit een groot gezin. Ik heb drie broers en een zus.', 'I come from a big family. I have three brothers and a sister.'),
+        line('Tom', 'Mijn zus is getrouwd en ze heeft drie kinderen: twee jongens en een meisje.', 'My sister is married and she has three children: two boys and a girl.'),
+        line('Tom', 'Mijn ouders wonen nog in Friesland, in een klein dorp.', 'My parents still live in Friesland, in a small village.'),
+        line('Tom', 'Met Kerst zijn we allemaal samen. Heel gezellig, maar wel druk!', "At Christmas we're all together. Very cosy, but busy!"),
+      ],
+      questions: [
+        { type: 'text', prompt: "How many children does Tom's sister have?", accept: ['3', 'drie', 'three'] },
+        { type: 'choice', prompt: "Where do Tom's parents live?", options: ['In a city in Friesland', 'In a small village in Friesland', 'In Brussels'], answer: 1 },
+      ],
+    },
+    speaking: {
+      prompt: 'Tell a colleague about your family: who is in it and where they live.',
+      mustInclude: [
+        i('family', 'Mention a family member', 'vader|moeder|ouders|broer*|zus*|kind*|zoon|dochter|man|vrouw|vriend*|partner|opa|oma|gezin|familie'),
+        i('where', 'Say where someone lives', 'woon*|wonen'),
+      ],
+      modelAnswers: [
+        'Ik heb een broer en een zus. Mijn ouders wonen in Canada.',
+        'Mijn familie woont in Canada. Ik heb twee broers, en ik woon hier met mijn vriend.',
+      ],
+      hints: ['Ik heb een …', 'Mijn ouders wonen in …'],
+    },
+    grammar: {
+      title: 'Possessives: mijn, jouw, zijn, haar',
+      explanation:
+        "**mijn** (my) · **jouw/je** (your, informal) · **uw** (your, formal) · **zijn** (his) · **haar** (her) · **ons/onze** (our) · **jullie** (your, plural) · **hun** (their). In speech you'll hear short forms: *m'n broer, je zus, z'n vader*. **Ons** goes with het-words (*ons huis*); **onze** with de-words and plurals (*onze tuin, onze kinderen*).",
+      examples: [
+        { nl: 'Dit is mijn broer.', en: 'This is my brother.', highlight: 'mijn' },
+        { nl: 'Is dat jouw moeder?', en: 'Is that your mother?', highlight: 'jouw' },
+        { nl: 'Hij woont bij zijn ouders.', en: 'He lives with his parents.', highlight: 'zijn' },
+        { nl: 'Ons huis is klein, maar onze tuin is groot.', en: 'Our house is small, but our garden is big.', highlight: 'Ons' },
+      ],
+      commonMistake: { wrong: 'Onze huis is klein.', right: 'Ons huis is klein.', why: "'Huis' is a het-word, so 'ons', not 'onze'." },
+    },
+    culture: {
+      title: 'Gezin, familie — and the agenda',
+      body: "Dutch distinguishes 'het gezin' (your household: partner and children) from 'de familie' (all your relatives). Family life is fairly private and planned: adult children often live far from their parents and visits go in the agenda weeks ahead. If a friend says 'Zondag gaan we naar mijn schoonouders' (in-laws), that's sacred time.",
+    },
+    review: [
+      { type: 'translate', prompt: 'I have two sisters.', accept: ['Ik heb twee zussen'] },
+      { type: 'fill', patternId: 'de-het', sentence: 'Dit is ___ huis. (our)', en: 'This is our house.', accept: ['ons'] },
+      { type: 'choose', prompt: "'Mijn vriend' usually means…", options: ['my friend (always)', 'my boyfriend, or a friend — context decides', 'my family'], answer: 1 },
+      { type: 'order', en: 'Do you have brothers or sisters?', words: ['Heb', 'je', 'broers', 'of', 'zussen'] },
+      { type: 'respond', situation: "A new colleague asks 'Heb je kinderen?' Answer.", npc: { nl: 'Heb je kinderen?', en: 'Do you have children?' }, intents: [i('answer', 'Answer', 'ja|nee|geen|zoon|dochter|kind*')], modelAnswers: ['Nee, ik heb geen kinderen.', 'Ja, ik heb een zoon en een dochter.'] },
+      { type: 'dictation', nl: 'Mijn ouders wonen in een klein dorp.', en: 'My parents live in a small village.' },
+    ],
+  }),
+
+  defineLesson({
+    id: 'a1.food',
+    level: 'A1',
+    unit: 'Food',
+    order: 2,
+    title: 'At the café: ordering food and drinks',
+    subtitle: 'Order, ask for the bill and say what you like',
+    canDo: 'I can order food and drinks in a café and ask for the bill.',
+    minutes: 10,
+    situation: {
+      setting: "A sunny terrace in Haarlem. You're having lunch with your friend Joost. The waiter comes to your table.",
+      dialogue: [
+        line('Waiter', 'Hoi! Weten jullie al wat jullie willen?', "Hi! Do you know what you'd like?"),
+        line('Joost', 'Ik neem een tosti en een cappuccino.', "I'll have a toastie and a cappuccino."),
+        line('You', 'Mag ik de soep van de dag? En een glas water, alsjeblieft.', 'Can I have the soup of the day? And a glass of water, please.'),
+        line('Waiter', 'Natuurlijk. Wil je er brood bij?', 'Of course. Would you like bread with it?'),
+        line('You', 'Ja, lekker!', 'Yes, lovely!'),
+        line('Joost', 'Eet smakelijk!', 'Enjoy your meal!'),
+        line('You', 'Eet smakelijk! Mmm, de soep is echt lekker.', 'Enjoy! Mmm, the soup is really tasty.'),
+        line('You', 'Mogen we afrekenen?', 'Could we have the bill?'),
+        line('Waiter', 'Ja hoor. Samen of apart?', 'Sure. Together or separately?'),
+        line('Joost', 'Apart graag.', 'Separately, please.'),
+      ],
+    },
+    vocabulary: [
+      ['ik-neem', 'Ik neem …', "I'll have …", 'Ik neem een tosti kaas.', "I'll have a cheese toastie.", { note: "The most natural way to order. Also: 'Mag ik …?' or 'Doe maar …'." }],
+      ['mag-ik', 'Mag ik …?', 'Can I have …?', 'Mag ik een glas water?', 'Can I have a glass of water?', { note: "Polite and very common — no need for 'hebben' at the end." }],
+      ['eet-smakelijk', 'Eet smakelijk!', 'Enjoy your meal!', 'Het eten staat op tafel. Eet smakelijk!', 'Dinner is on the table. Enjoy your meal!', { note: "Said before everyone starts. In Belgium also just 'Smakelijk!'" }],
+      ['lekker', 'lekker', 'tasty; nice', 'De soep is echt lekker.', 'The soup is really tasty.', { note: "A key word: 'lekker weer' (nice weather), 'lekker slapen' (sleep well). 'Lekker!' also means 'Great!'" }],
+      ['afrekenen', 'Mogen we afrekenen?', 'Could we have the bill?', 'Pardon, mogen we afrekenen?', 'Excuse me, could we have the bill?', { note: "Also: 'Mag ik de rekening?'" }],
+      ['samen-of-apart', 'Samen of apart?', 'Together or separately?', 'Samen of apart? – Samen, ik trakteer!', "Together or separately? – Together, it's on me!", { note: "'Ik trakteer' = my treat. Splitting the bill is completely normal." }],
+      ['een-glas-water', 'een glas water', 'a glass of water', 'Mag ik ook een glas water?', 'Can I also have a glass of water?', { note: 'Tap water (kraanwater) is safe everywhere.' }],
+      ['de-soep', 'de soep van de dag', 'the soup of the day', 'Wat is de soep van de dag?', 'What is the soup of the day?', { article: 'de', emoji: '🍲' }],
+    ],
+    pronunciation: {
+      focus: 'r',
+      tip: "Make the R audible at the start of a word ('rekening') — a tongue tap or a throaty R both work. Also note: '-lijk' in 'smakelijk' is pronounced with a weak vowel, like 'luk'.",
+      items: [
+        { nl: 'Mogen we afrekenen?', en: 'Could we have the bill?' },
+        { nl: 'Wil je er brood bij?', en: 'Would you like bread with it?' },
+        { nl: 'Eet smakelijk!', en: 'Enjoy your meal!' },
+      ],
+    },
+    listening: {
+      intro: 'Ordering at a snack bar. What does Kevin order?',
+      lines: [
+        line('Staff', 'Zeg het maar!', 'What can I get you?'),
+        line('Kevin', 'Een patat met mayo en een kroket, alstublieft.', 'Fries with mayo and a croquette, please.'),
+        line('Staff', 'Wil je er iets te drinken bij?', 'Would you like something to drink with that?'),
+        line('Kevin', 'Een cola graag.', 'A cola, please.'),
+        line('Staff', 'Hier eten of meenemen?', 'Eat in or take away?'),
+        line('Kevin', 'Meenemen.', 'Take away.'),
+      ],
+      questions: [
+        { type: 'choice', prompt: 'What does Kevin order to eat?', options: ['Fries with mayo and a croquette', 'A cheese toastie', 'Soup'], answer: 0 },
+        { type: 'choice', prompt: 'Does he eat there?', options: ['Yes', 'No, he takes it away'], answer: 1 },
+      ],
+    },
+    speaking: {
+      prompt: "You're at a café. Order a drink and something to eat, then ask for the bill.",
+      mustInclude: [
+        i('order', 'Order something', 'neem|mag ik|graag|doe maar|alsjeblieft|alstublieft'),
+        i('bill', 'Ask for the bill', 'afrekenen|rekening|betalen'),
+      ],
+      modelAnswers: [
+        'Ik neem een koffie en een broodje kaas. Mogen we afrekenen?',
+        'Mag ik een thee en een tosti? En kunnen we straks afrekenen?',
+      ],
+      hints: ['Ik neem …', 'Mogen we …?'],
+    },
+    grammar: {
+      title: 'de or het?',
+      explanation:
+        "Every noun has an article: **de** or **het**. About two thirds are de-words. There's no complete rule, so learn each noun with its article: *de koffie, de soep, het brood, het water, het glas*. Helpful rules: all **plurals** take *de* (de broodjes); all **diminutives** (-je) take *het* (het broodje); **een** works for both.",
+      examples: [
+        { nl: 'De soep is lekker.', en: 'The soup is tasty.', highlight: 'De' },
+        { nl: 'Het brood is vers.', en: 'The bread is fresh.', highlight: 'Het' },
+        { nl: 'Het broodje is voor jou.', en: 'The roll is for you.', highlight: 'Het' },
+        { nl: 'De broodjes zijn op.', en: 'The rolls are all gone.', highlight: 'De' },
+      ],
+      commonMistake: { wrong: 'De brood is vers.', right: 'Het brood is vers.', why: "'Brood' is a het-word." },
+    },
+    culture: {
+      title: 'Bread for lunch, dinner at six',
+      body: "A Dutch lunch is often simple: a sandwich with cheese (een boterham met kaas) and a glass of milk or coffee — even at work. Dinner is early, around 18:00. In cafés you order at the table and usually pay at the end ('Mogen we afrekenen?'). Tipping is modest: round up, or 5–10% for good service. Snack-bar Dutch differs by region: 'patat' in the north, 'friet' in the south and in Flanders — where fries are a matter of national pride.",
+    },
+    review: [
+      { type: 'translate', prompt: "I'll have a coffee.", accept: ['Ik neem een koffie', 'Mag ik een koffie', 'Een koffie graag', 'Een koffie alsjeblieft', 'Een koffie alstublieft', 'Doe maar een koffie'] },
+      { type: 'choose', patternId: 'de-het', prompt: '___ brood is vers.', options: ['De', 'Het'], answer: 1 },
+      { type: 'choose', prompt: 'Before eating, Dutch people say:', options: ['Proost!', 'Eet smakelijk!', 'Gefeliciteerd!'], answer: 1 },
+      { type: 'order', en: 'Could we have the bill?', words: ['Mogen', 'we', 'afrekenen'] },
+      { type: 'fill', sentence: 'De soep is echt ___!', en: 'The soup is really tasty!', accept: ['lekker'] },
+      { type: 'respond', situation: "The waiter asks 'Samen of apart?' You want to pay separately.", npc: { nl: 'Samen of apart?', en: 'Together or separately?' }, intents: [i('apart', 'Say separately', 'apart|ieder voor zich')], modelAnswers: ['Apart graag.', 'Apart, alsjeblieft.'] },
+    ],
+  }),
+
+  defineLesson({
+    id: 'a1.shopping',
+    level: 'A1',
+    unit: 'Shopping',
+    order: 3,
+    title: 'At the supermarket',
+    subtitle: 'Find products, understand the cashier and pay',
+    canDo: 'I can find products in a shop, ask where something is and handle the checkout.',
+    minutes: 10,
+    situation: {
+      setting: "Your local supermarket on a Saturday morning. You can't find the eggs.",
+      dialogue: [
+        line('You', 'Pardon, waar kan ik de eieren vinden?', 'Excuse me, where can I find the eggs?'),
+        line('Employee', 'De eieren liggen in gang vier, naast de melk.', 'The eggs are in aisle four, next to the milk.'),
+        line('You', 'Dank je wel!', 'Thank you!'),
+        line('Cashier', 'Goedemorgen. Spaart u zegeltjes?', 'Good morning. Are you collecting stamps?'),
+        line('You', 'Nee, dank u.', 'No, thank you.'),
+        line('Cashier', 'Wilt u een tasje?', 'Would you like a bag?'),
+        line('You', 'Nee hoor, ik heb een tas bij me.', "No thanks, I've brought a bag."),
+        line('Cashier', 'Dat is dan vijftien euro twintig. U kunt pinnen.', "That's fifteen euros twenty. You can pay by card."),
+        line('Cashier', 'Wilt u de bon?', 'Would you like the receipt?'),
+        line('You', 'Nee, hoeft niet.', 'No, no need.'),
+      ],
+    },
+    vocabulary: [
+      ['waar-vind-ik', 'Waar kan ik … vinden?', 'Where can I find …?', 'Waar kan ik de rijst vinden?', 'Where can I find the rice?', { note: "Shorter: 'Waar liggen de eieren?' / 'Waar staat de melk?' — Dutch uses liggen (lie) and staan (stand) for where things are." }],
+      ['naast', 'naast', 'next to', 'De kaas ligt naast de melk.', 'The cheese is next to the milk.', { note: 'Also: bij (at, near), tegenover (opposite), achterin (at the back).' }],
+      ['wilt-u-een-tasje', 'Wilt u een tasje?', 'Would you like a bag?', 'Wilt u een tasje? Dat kost tien cent.', 'Would you like a bag? It costs ten cents.', { note: 'Bags cost money, so most people bring their own.' }],
+      ['wilt-u-de-bon', 'Wilt u de bon?', 'Would you like the receipt?', 'Wilt u de bon? – Nee, hoeft niet.', 'Would you like the receipt? – No, no need.'],
+      ['hoeft-niet', 'Hoeft niet', 'No need', 'Wil je een tasje? – Hoeft niet, dank je.', 'Do you want a bag? – No need, thanks.', { register: 'informal' }],
+      ['aanbieding', 'in de aanbieding', 'on offer', 'De koffie is deze week in de aanbieding.', 'The coffee is on offer this week.', { article: 'de', band: 2, note: "'1 + 1 gratis' = buy one, get one free." }],
+      ['boodschappen-doen', 'boodschappen doen', 'to do the (grocery) shopping', 'Ik ga even boodschappen doen.', "I'm just going to do the shopping."],
+      ['de-kassa', 'de kassa', 'the checkout', 'Bij de kassa betaal je met je pinpas.', 'At the checkout you pay with your debit card.', { article: 'de' }],
+    ],
+    pronunciation: {
+      focus: 'eu',
+      tip: "EU in 'euro': say 'ee' and round your lips. Dutch 'euro' is not English 'you-ro'.",
+      items: [
+        { nl: 'Dat is dan vijftien euro.', en: "That's fifteen euros." },
+        { nl: 'Het kost maar één euro.', en: 'It only costs one euro.' },
+        { nl: 'Die leuke tas kost tien euro.', en: 'That nice bag costs ten euros.' },
+      ],
+    },
+    listening: {
+      intro: 'At the checkout. What does the customer almost forget?',
+      lines: [
+        line('Cashier', 'Dat is dan achtentwintig euro vijftig.', "That's twenty-eight euros fifty."),
+        line('Customer', 'Oké, ik pin.', "Okay, I'll pay by card."),
+        line('Cashier', 'Wilt u de bon?', 'Would you like the receipt?'),
+        line('Customer', 'Ja, graag.', 'Yes, please.'),
+        line('Cashier', 'Alstublieft. O, mevrouw, u vergeet uw tas!', "Here you are. Oh, madam, you're forgetting your bag!"),
+        line('Customer', 'O, dank u wel!', 'Oh, thank you!'),
+      ],
+      questions: [
+        { type: 'choice', prompt: 'How much does she pay?', options: ['€28.50', '€82.50', '€25.80'], answer: 0 },
+        { type: 'choice', prompt: 'What does she almost forget?', options: ['Her receipt', 'Her bag', 'Her card'], answer: 1 },
+      ],
+    },
+    speaking: {
+      prompt: "Ask an employee where the rice is. Then tell the cashier you don't need a bag.",
+      mustInclude: [
+        i('where', 'Ask where something is', 'waar'),
+        i('bag', 'Decline a bag', 'geen tas*|hoeft niet|eigen tas|tas bij'),
+      ],
+      modelAnswers: [
+        'Pardon, waar kan ik de rijst vinden? Nee, dank u, ik heb geen tasje nodig.',
+        'Waar ligt de rijst? Nee hoor, ik heb een tas bij me.',
+      ],
+      hints: ['Pardon, waar …?', 'Nee, dank u, ik heb …'],
+    },
+    grammar: {
+      title: 'Plurals: -en and -s',
+      explanation:
+        "The default plural is **-en**: *de fiets → de fietsen*. Nouns ending in unstressed **-el, -er, -em, -en** and **-je** take **-s**: *de appel → de appels, het tasje → de tasjes*. Spelling adapts to keep the vowel sound: *de tas → de tassen* (short a, double s), *het brood → de broden* (long o, single o). Every plural takes **de**.",
+      examples: [
+        { nl: 'één fiets, twee fietsen', en: 'one bike, two bikes' },
+        { nl: 'één appel, drie appels', en: 'one apple, three apples' },
+        { nl: 'één tas, twee tassen', en: 'one bag, two bags' },
+        { nl: 'één ei, zes eieren', en: 'one egg, six eggs (irregular)' },
+      ],
+      commonMistake: { wrong: "twee kilo's appels", right: 'twee kilo appels', why: 'Units like kilo, euro and jaar stay singular after a number.' },
+    },
+    culture: {
+      title: 'Pack fast, and love a bargain',
+      body: "Dutch supermarkets are efficient: cashiers scan fast and you pack your own groceries — quickly, because the next customer is waiting. Opening hours vary: many supermarkets close around 21:00–22:00, and Sunday hours can be shorter outside the big cities. Weekly offers ('aanbiedingen') are taken seriously; finding a bargain is something of a national sport.",
+    },
+    review: [
+      { type: 'translate', prompt: 'Where can I find the milk?', accept: ['Waar kan ik de melk vinden', 'Waar vind ik de melk', 'Waar staat de melk', 'Waar is de melk'] },
+      { type: 'fill', sentence: 'Wilt u de ___? – Nee, hoeft niet.', en: 'Would you like the receipt? – No need.', accept: ['bon'] },
+      { type: 'choose', prompt: "Plural of 'de tas':", options: ['de tasen', 'de tassen', 'de tass'], answer: 1 },
+      { type: 'fill', patternId: 'units-after-numbers', sentence: 'Twee ___ appels, alstublieft. (kilo)', en: 'Two kilos of apples, please.', accept: ['kilo'] },
+      { type: 'respond', situation: "The cashier asks 'Wilt u een tasje?' You brought your own bag.", npc: { nl: 'Wilt u een tasje?', en: 'Would you like a bag?' }, intents: [i('no', 'Decline', 'nee|hoeft niet|geen')], modelAnswers: ['Nee, dank u, ik heb een tas bij me.', 'Hoeft niet, dank je!'] },
+      { type: 'dictation', nl: 'De eieren liggen naast de melk.', en: 'The eggs are next to the milk.' },
+    ],
+  }),
+
+  defineLesson({
+    id: 'a1.time',
+    level: 'A1',
+    unit: 'Time',
+    order: 4,
+    title: 'What time is it? Making plans',
+    subtitle: "Tell the time the Dutch way and plan your week",
+    canDo: "I can tell the time, understand 'half drie' and make simple plans.",
+    minutes: 12,
+    situation: {
+      setting: 'You call your classmate Emma to plan a study session.',
+      dialogue: [
+        line('Emma', 'Hé! Zullen we morgen samen Nederlands oefenen?', 'Hey! Shall we practise Dutch together tomorrow?'),
+        line('You', 'Ja, leuk! Hoe laat?', 'Yes, nice! What time?'),
+        line('Emma', 'Om half drie? Na de les.', 'At half past two? After class.'),
+        line('You', 'Half drie… dus 3:30?', 'Half drie… so 3:30?'),
+        line('Emma', 'Nee, half drie is 2:30! Een half uur vóór drie.', 'No, half drie is 2:30! Half an hour before three.'),
+        line('You', 'Ah, oké. Half drie is goed. Waar?', 'Ah, okay. Half past two is fine. Where?'),
+        line('Emma', 'In de bibliotheek. Tot morgen!', 'In the library. See you tomorrow!'),
+      ],
+    },
+    vocabulary: [
+      ['hoe-laat-is-het', 'Hoe laat is het?', 'What time is it?', 'Hoe laat is het? – Het is kwart over vier.', "What time is it? – It's a quarter past four."],
+      ['half-drie', 'half drie', 'half past two (2:30)', 'De film begint om half acht.', 'The film starts at half past seven.', { note: "Dutch counts towards the next hour: 'half drie' = half an hour before three = 2:30!" }],
+      ['kwart-over', 'kwart over / kwart voor', 'quarter past / quarter to', 'Het is kwart voor negen.', "It's a quarter to nine."],
+      ['om-hoe-laat', 'Om hoe laat?', 'At what time?', 'We gaan uit eten. – Om hoe laat?', "We're going out for dinner. – At what time?", { note: "'Om' = at (a time): om acht uur, om half zes." }],
+      ['zullen-we', 'Zullen we …?', 'Shall we …?', 'Zullen we zaterdag koffie drinken?', 'Shall we have coffee on Saturday?', { note: "The standard way to suggest a plan. Answers: 'Leuk!' / 'Goed idee!' / 'Helaas, dan kan ik niet.'" }],
+      ['morgen', 'morgen / overmorgen', 'tomorrow / the day after tomorrow', 'Morgen heb ik geen tijd, maar overmorgen wel.', "Tomorrow I don't have time, but the day after I do."],
+      ['maandag', 'op maandag', 'on Monday', 'Op maandag werk ik thuis.', 'On Mondays I work from home.', { note: 'maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag — no capital letters.' }],
+      ['ik-kan-niet', 'Dan kan ik niet', "I can't (make it) then", 'Zaterdag? Dan kan ik helaas niet.', "Saturday? Unfortunately I can't make it then."],
+    ],
+    pronunciation: {
+      focus: 'uu',
+      tip: "UU in 'uur' (hour): say 'ee', then round your lips tightly. 'Uur' does not sound like English 'your'.",
+      items: [
+        { nl: 'Het is drie uur.', en: "It's three o'clock." },
+        { nl: 'Om hoe laat? Om acht uur.', en: 'At what time? At eight.' },
+        { nl: 'Een half uur later.', en: 'Half an hour later.' },
+      ],
+    },
+    listening: {
+      intro: "A voicemail from the dentist's practice. When is the appointment?",
+      lines: [
+        line('Assistant', 'Goedemiddag, u spreekt met de tandartspraktijk.', 'Good afternoon, this is the dental practice.'),
+        line('Assistant', 'Ik bel over uw afspraak. Die is verplaatst naar donderdag.', "I'm calling about your appointment. It has been moved to Thursday."),
+        line('Assistant', 'Donderdag om kwart over tien. Kunt u ons terugbellen als dat niet uitkomt?', "Thursday at a quarter past ten. Could you call us back if that doesn't suit you?"),
+        line('Assistant', 'Dank u wel, tot ziens.', 'Thank you, goodbye.'),
+      ],
+      questions: [
+        { type: 'choice', prompt: 'What day is the new appointment?', options: ['Tuesday', 'Thursday', 'Saturday'], answer: 1 },
+        { type: 'choice', prompt: 'At what time?', options: ['10:15', '10:45', '9:45'], answer: 0 },
+      ],
+    },
+    speaking: {
+      prompt: 'Suggest meeting a friend: say the day and the time.',
+      mustInclude: [
+        i('suggest', 'Make a suggestion', 'zullen we|heb je zin|wil je|kun je|zin om'),
+        i('day', 'Mention a day', 'maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag|morgen|overmorgen|vanavond|weekend'),
+        i('time', 'Mention a time', 'uur|half|kwart|#num'),
+      ],
+      modelAnswers: [
+        'Zullen we zaterdag om drie uur koffie drinken?',
+        'Heb je zin om morgen om half acht naar de film te gaan?',
+      ],
+      hints: ['Zullen we …?', '… om half …'],
+    },
+    grammar: {
+      title: "Verb second: 'Morgen ga ik…'",
+      explanation:
+        "In a Dutch main clause the conjugated verb is **always in second place**. If you start with a time (*morgen, om drie uur, op maandag*), the subject moves **after** the verb: *Morgen **ga ik** naar Utrecht.* This inversion is one of the most common learner mistakes — and one of the easiest to fix once you notice it.",
+      examples: [
+        { nl: 'Ik ga morgen naar Utrecht.', en: "I'm going to Utrecht tomorrow.", highlight: 'ga' },
+        { nl: 'Morgen ga ik naar Utrecht.', en: "Tomorrow I'm going to Utrecht.", highlight: 'ga ik' },
+        { nl: 'Op maandag werk ik thuis.', en: 'On Mondays I work from home.', highlight: 'werk ik' },
+      ],
+      commonMistake: { wrong: 'Morgen ik ga naar Utrecht.', right: 'Morgen ga ik naar Utrecht.', why: 'The verb stays in second place; the subject follows it.' },
+    },
+    culture: {
+      title: 'Agenda culture',
+      body: "Dutch social life runs on the agenda (calendar): friends schedule dinners weeks ahead, and 'Ik kijk even in mijn agenda' is a completely normal answer to an invitation. Being on time matters — if you'll be five minutes late, send a message. Spontaneous visits are less common than in many cultures. And if you're invited 'for coffee' at 15:00, you're probably not staying for dinner.",
+    },
+    review: [
+      { type: 'choose', prompt: "'Half zeven' is…", options: ['7:30', '6:30', '7:15'], answer: 1 },
+      { type: 'order', patternId: 'word-order-v2', en: 'Tomorrow I am going to the market.', words: ['Morgen', 'ga', 'ik', 'naar', 'de', 'markt'] },
+      { type: 'translate', prompt: "It's a quarter past five.", accept: ['Het is kwart over vijf'] },
+      { type: 'fill', sentence: '___ we zaterdag afspreken?', en: 'Shall we meet up on Saturday?', accept: ['Zullen'] },
+      { type: 'respond', situation: "A friend asks 'Zullen we vrijdag uit eten gaan?' You can't on Friday; suggest Saturday.", npc: { nl: 'Zullen we vrijdag uit eten gaan?', en: 'Shall we go out for dinner on Friday?' }, intents: [i('decline', "Say Friday doesn't work", 'kan ik niet|kan niet|helaas|geen tijd|lukt niet'), i('suggest', 'Suggest Saturday', 'zaterdag')], modelAnswers: ['Vrijdag kan ik niet. Zaterdag?', 'Helaas, vrijdag kan ik niet. Zullen we zaterdag gaan?'] },
+      { type: 'dictation', nl: 'De les begint om half negen.', en: 'The class starts at half past eight.' },
+    ],
+  }),
+
+  defineLesson({
+    id: 'a1.directions',
+    level: 'A1',
+    unit: 'Directions',
+    order: 5,
+    title: 'Asking the way',
+    subtitle: 'Ask for directions and understand the answer',
+    canDo: 'I can ask for directions and follow simple instructions to get somewhere.',
+    minutes: 10,
+    situation: {
+      setting: "You've just arrived at Utrecht Centraal and need to find your hotel. You ask a woman at the tram stop.",
+      dialogue: [
+        line('You', 'Pardon, mag ik u iets vragen? Weet u waar Hotel Dom is?', 'Excuse me, may I ask you something? Do you know where Hotel Dom is?'),
+        line('Woman', 'Hotel Dom? Ja, dat is niet ver. Loop hier rechtdoor tot het stoplicht.', "Hotel Dom? Yes, that's not far. Walk straight ahead to the traffic lights."),
+        line('You', 'Tot het stoplicht, ja.', 'To the traffic lights, yes.'),
+        line('Woman', 'Daar gaat u linksaf, en dan de tweede straat rechts. Het hotel is aan de gracht.', 'There you turn left, and then the second street on the right. The hotel is on the canal.'),
+        line('You', 'Is het ver lopen?', 'Is it a long walk?'),
+        line('Woman', 'Nee hoor, ongeveer tien minuten. Let wel op de fietsers!', 'No, about ten minutes. Do watch out for the cyclists!'),
+        line('You', 'Haha, dank u wel!', 'Haha, thank you!'),
+      ],
+    },
+    vocabulary: [
+      ['weet-u-waar', 'Weet u waar … is?', 'Do you know where … is?', 'Weet u waar het station is?', 'Do you know where the station is?', { note: "After 'waar', the verb goes to the end: '…waar het station is'." }],
+      ['rechtdoor', 'rechtdoor', 'straight ahead', 'Ga rechtdoor tot de kerk.', 'Go straight ahead to the church.'],
+      ['linksaf-rechtsaf', 'linksaf / rechtsaf', '(turn) left / right', 'Bij de brug gaat u rechtsaf.', 'At the bridge you turn right.', { note: "'Links/rechts' = on the left/right; 'linksaf/rechtsaf' = turn left/right." }],
+      ['het-stoplicht', 'het stoplicht', 'the traffic light', 'Bij het stoplicht linksaf.', 'Turn left at the traffic light.', { article: 'het', emoji: '🚦' }],
+      ['de-tweede-straat', 'de tweede straat rechts', 'the second street on the right', 'Neem de tweede straat rechts.', 'Take the second street on the right.'],
+      ['ver', 'Is het ver?', 'Is it far?', 'Is het ver lopen? – Nee, vijf minuten.', 'Is it a long walk? – No, five minutes.', { note: "'Ver lopen' = a long walk; 'ver fietsen' = a long bike ride." }],
+      ['tegenover', 'tegenover', 'opposite', 'Het café is tegenover het station.', 'The café is opposite the station.'],
+      ['het-fietspad', 'het fietspad', 'the bike lane', 'Loop niet op het fietspad!', "Don't walk on the bike lane!", { article: 'het', band: 2, note: 'Usually red asphalt. Cyclists will ring their bell.' }],
+    ],
+    pronunciation: {
+      focus: 'g',
+      tip: "CH and G are the same scrape at the back of the throat. 'Rechtdoor' and 'gracht' each have one — or two!",
+      items: [
+        { nl: 'Ga rechtdoor.', en: 'Go straight ahead.' },
+        { nl: 'Bij de gracht rechtsaf.', en: 'Turn right at the canal.' },
+        { nl: 'Het hotel is aan de gracht.', en: 'The hotel is on the canal.' },
+      ],
+    },
+    listening: {
+      intro: 'Directions to the pharmacy. Where is it?',
+      lines: [
+        line('Man', 'De apotheek? Die is hier vlakbij.', "The pharmacy? It's very close by."),
+        line('Man', 'Ga bij de bakker rechtsaf. Dan ziet u een plein.', "Turn right at the bakery. Then you'll see a square."),
+        line('Man', 'De apotheek is aan de overkant van het plein, naast de bank.', 'The pharmacy is on the other side of the square, next to the bank.'),
+      ],
+      questions: [
+        { type: 'choice', prompt: 'Where do you turn right?', options: ['At the bakery', 'At the bank', 'At the square'], answer: 0 },
+        { type: 'choice', prompt: 'The pharmacy is next to…', options: ['the bakery', 'the bank', 'the church'], answer: 1 },
+      ],
+    },
+    speaking: {
+      prompt: 'Ask a stranger politely where the station is, and whether it is far.',
+      mustInclude: [i('where', 'Ask where the station is', 'station'), i('far', 'Ask if it is far', 'ver|lopen|hoe lang|minuten')],
+      modelAnswers: [
+        'Pardon, weet u waar het station is? Is het ver?',
+        'Sorry, mag ik u iets vragen? Waar is het station? Is het ver lopen?',
+      ],
+      hints: ['Pardon, weet u waar …?', 'Is het …?'],
+    },
+    grammar: {
+      title: 'Giving directions: the imperative',
+      explanation:
+        "To give instructions, start with the verb **stem**: *Ga rechtdoor. Neem de tweede straat. Loop naar de brug.* With strangers, many people use **u** + verb instead: *U gaat rechtdoor en dan neemt u de tweede straat.* Add **maar** to sound friendly: *Ga maar rechtdoor.*",
+      examples: [
+        { nl: 'Ga rechtdoor.', en: 'Go straight on.', highlight: 'Ga' },
+        { nl: 'Neem de tweede straat links.', en: 'Take the second street on the left.', highlight: 'Neem' },
+        { nl: 'U gaat hier rechtsaf.', en: 'You turn right here.', highlight: 'U gaat' },
+      ],
+      commonMistake: { wrong: 'Weet u waar is het station?', right: 'Weet u waar het station is?', why: "After 'weet u waar…' the verb moves to the end." },
+    },
+    culture: {
+      title: 'Watch out for bikes',
+      body: "The Netherlands has more bikes than people. As a pedestrian, never walk on the red bike lane (fietspad) — cyclists are fast and will ring their bell. When crossing, look out for bikes from both directions. Asking for directions is easy: people are happy to help and give precise, no-nonsense instructions ('Tweede rechts, dan zie je het').",
+    },
+    review: [
+      { type: 'translate', prompt: 'Go straight ahead.', accept: ['Ga rechtdoor', 'Loop rechtdoor', 'Ga maar rechtdoor'] },
+      { type: 'order', patternId: 'verb-final-subclause', en: 'Do you know where the station is?', words: ['Weet', 'u', 'waar', 'het', 'station', 'is'] },
+      { type: 'choose', prompt: "'Tegenover de bank' means…", options: ['next to the bank', 'opposite the bank', 'behind the bank'], answer: 1 },
+      { type: 'fill', sentence: 'Bij het stoplicht gaat u ___. (turn left)', en: 'At the traffic lights you turn left.', accept: ['linksaf', 'links'] },
+      { type: 'dictation', nl: 'Neem de tweede straat rechts.', en: 'Take the second street on the right.' },
+    ],
+  }),
+
+  defineLesson({
+    id: 'a1.zijn-hebben',
+    level: 'A1',
+    unit: 'Basic grammar',
+    order: 6,
+    title: 'Zijn and hebben: talking about yourself',
+    subtitle: 'The two most useful verbs — and where Dutch uses them differently from English',
+    canDo: 'I can describe myself, how I feel and what I have, using zijn and hebben correctly.',
+    minutes: 12,
+    situation: {
+      setting: "A cold winter evening. You arrive at your friend Daan's place after cycling through the rain.",
+      dialogue: [
+        line('Daan', 'Hé, kom binnen! Je bent helemaal nat!', "Hey, come in! You're soaking wet!"),
+        line('You', 'Ja, het regent zo hard. En ik heb het echt koud.', "Yes, it's raining so hard. And I'm really cold."),
+        line('Daan', 'Wil je thee? Of heb je honger? Ik heb soep.', 'Do you want tea? Or are you hungry? I have soup.'),
+        line('You', 'Lekker, ik heb wel honger. En dorst!', "Lovely, I am hungry. And thirsty!"),
+        line('Daan', 'Hoe was je dag?', 'How was your day?'),
+        line('You', 'Druk. Ik ben een beetje moe, maar ik ben blij dat ik hier ben.', "Busy. I'm a bit tired, but I'm glad I'm here."),
+        line('Daan', 'Gezellig! Ga lekker zitten.', 'Nice! Sit down and make yourself comfortable.'),
+      ],
+    },
+    vocabulary: [
+      ['ik-ben', 'Ik ben …', 'I am …', 'Ik ben moe, maar blij.', "I'm tired, but happy.", { note: 'zijn: ik ben, jij bent, hij/zij is, wij/jullie/zij zijn.' }],
+      ['ik-heb', 'Ik heb …', 'I have …', 'Ik heb een kat en twee fietsen.', 'I have a cat and two bikes.', { note: 'hebben: ik heb, jij hebt, hij/zij heeft, wij/jullie/zij hebben.' }],
+      ['honger', 'Ik heb honger', "I'm hungry", 'Ik heb honger. Zullen we eten?', "I'm hungry. Shall we eat?", { note: 'In Dutch you have hunger and thirst: ik heb honger, ik heb dorst.' }],
+      ['het-koud', 'Ik heb het koud', "I'm cold", 'Doe het raam dicht, ik heb het koud.', "Close the window, I'm cold.", { note: "'Ik ben koud' would describe your personality!" }],
+      ['hoe-oud', 'Hoe oud ben je?', 'How old are you?', 'Hoe oud ben je? – Ik ben dertig.', "How old are you? – I'm thirty.", { note: "You are an age: 'Ik ben 30 (jaar)'. Never 'Ik heb 30 jaar'." }],
+      ['geen', 'geen', 'no, not a, not any', 'Ik heb geen tijd en geen geld!', 'I have no time and no money!', { note: "'Geen' negates nouns with 'een' or without an article. 'Niet' negates the rest." }],
+      ['niet', 'niet', 'not', 'Ik ben niet moe. Het is niet ver.', "I'm not tired. It isn't far."],
+      ['een-beetje', 'een beetje', 'a bit', 'Ik spreek een beetje Nederlands.', 'I speak a little Dutch.'],
+    ],
+    pronunciation: {
+      focus: 'oe',
+      tip: "OE in 'moe' (tired) and 'goed': a short 'oo' with rounded lips.",
+      items: [
+        { nl: 'Ik ben een beetje moe.', en: "I'm a bit tired." },
+        { nl: 'Het gaat goed, hoor.', en: "It's going fine." },
+        { nl: 'Hoe oud ben je?', en: 'How old are you?' },
+      ],
+    },
+    listening: {
+      intro: "Two friends in the park on a hot day. What's the matter with Iris?",
+      lines: [
+        line('Iris', 'Pff, ik heb het zo warm!', "Phew, I'm so hot!"),
+        line('Bram', 'Ja, het is dertig graden. Heb je water bij je?', "Yes, it's thirty degrees. Do you have water with you?"),
+        line('Iris', 'Nee, niet bij me. En ik heb ook dorst.', "No, not with me. And I'm thirsty too."),
+        line('Bram', 'Hier, neem mijn fles. Ik heb nog een fles.', 'Here, take my bottle. I have another bottle.'),
+        line('Iris', 'Wat lief, dank je!', 'How sweet, thanks!'),
+      ],
+      questions: [
+        { type: 'choice', prompt: 'How does Iris feel?', options: ['Cold and hungry', 'Hot and thirsty', 'Tired and ill'], answer: 1 },
+        { type: 'choice', prompt: 'What does Bram give her?', options: ['A bottle of water', 'An ice cream', 'His hat'], answer: 0 },
+      ],
+    },
+    speaking: {
+      prompt: 'Say how old you are, how you feel right now, and something you have (a pet, a bike…).',
+      mustInclude: [
+        i('age', 'Say your age', ['ben', '#num']),
+        i('feel', 'Say how you feel', 'moe|blij|goed|ziek|honger|dorst|koud|warm|druk|prima|lekker'),
+        i('have', 'Say something you have', 'heb'),
+      ],
+      modelAnswers: [
+        'Ik ben dertig jaar. Ik ben een beetje moe. Ik heb een kat.',
+        'Ik ben 25 en ik heb het koud! Ik heb een fiets en een hond.',
+      ],
+      hints: ['Ik ben … jaar.', 'Ik heb …'],
+    },
+    grammar: {
+      title: 'zijn or hebben? Where Dutch differs from English',
+      explanation:
+        "Mostly **zijn** and **hebben** work like English 'be' and 'have'. But watch these: **Ik heb honger / dorst** (I'm hungry/thirsty) · **Ik heb het koud / warm** (I'm cold/hot) · **Ik ben 30** (I'm 30 — never 'ik heb 30 jaar'). To say 'not a / no', use **geen**: *Ik heb geen auto.* Use **niet** with verbs and adjectives: *Ik ben niet moe.*",
+      examples: [
+        { nl: 'Ik heb honger.', en: "I'm hungry.", highlight: 'heb' },
+        { nl: 'Hij heeft het koud.', en: "He's cold.", highlight: 'heeft het' },
+        { nl: 'Mijn zus is twintig.', en: 'My sister is twenty.', highlight: 'is' },
+        { nl: 'Ik heb geen tijd.', en: "I don't have time.", highlight: 'geen' },
+      ],
+      commonMistake: { wrong: 'Ik heb niet een auto.', right: 'Ik heb geen auto.', why: "'Niet een' becomes 'geen'." },
+    },
+    culture: {
+      title: 'Weather talk',
+      body: "Weather is the safest small-talk topic in the Low Countries — and there's always something to say. 'Wat een weer, hè!' works for sun, rain and storms alike. People cycle in almost any weather; rain is no excuse. A classic saying: 'Er bestaat geen slecht weer, alleen slechte kleding' — there's no bad weather, only bad clothing.",
+    },
+    review: [
+      { type: 'fill', patternId: 'honger-dorst', sentence: 'Ik ___ honger. (hebben)', en: "I'm hungry.", accept: ['heb'] },
+      { type: 'translate', patternId: 'het-koud-warm', prompt: "I'm cold.", accept: ['Ik heb het koud'] },
+      { type: 'translate', patternId: 'age-zijn', prompt: 'She is forty.', accept: ['Ze is veertig', 'Zij is veertig', 'Ze is 40', 'Zij is 40', 'Ze is veertig jaar', 'Zij is veertig jaar', 'Ze is 40 jaar', 'Zij is 40 jaar', 'Ze is veertig jaar oud', 'Zij is veertig jaar oud'] },
+      { type: 'fill', patternId: 'geen-niet', sentence: 'Ik heb ___ fiets. (no bike)', en: "I don't have a bike.", accept: ['geen'] },
+      { type: 'choose', patternId: 'subject-verb-agreement', prompt: 'Hij ___ twee broers.', options: ['heb', 'hebt', 'heeft'], answer: 2 },
+      { type: 'respond', situation: "Your friend asks 'Wil je iets eten?' Say you're not hungry, but you are thirsty.", npc: { nl: 'Wil je iets eten?', en: 'Do you want something to eat?' }, intents: [i('nohunger', "Say you're not hungry", 'geen honger'), i('thirst', "Say you're thirsty", 'dorst')], modelAnswers: ['Nee, dank je, ik heb geen honger. Maar ik heb wel dorst.', 'Ik heb geen honger, maar wel dorst!'] },
+    ],
+  }),
+];

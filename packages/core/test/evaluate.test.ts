@@ -55,6 +55,13 @@ describe('intents', () => {
     expect(intentSatisfied('Ik ben Sam', intent)).toBe(false);
   });
 
+  it('matches numbers with #num', () => {
+    expect(termMatches('Ik ben 25 jaar', '#num')).toBe(true);
+    expect(termMatches('Ik ben vijfentwintig', '#num')).toBe(true);
+    expect(termMatches('om 14:30', '#num')).toBe(true);
+    expect(termMatches('Ik ben moe', '#num')).toBe(false);
+  });
+
   it('is accent- and case-insensitive', () => {
     expect(termMatches('Ik kom uit BELGIË', 'belgie')).toBe(true);
   });
